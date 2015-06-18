@@ -14,10 +14,21 @@ require(['jquery'], function($) {
 		$el.after(html);
 	});
 
+	// make sure this code should only executes on the content migration page
 	if (is_content_migration_page) {
 		poll_for_element();
 	}
 
+	/**
+	 * Poll the DOM for the existence of an element and then execute
+	 * the "success" callback when/if the element is found to exist.
+	 *
+	 * @param {(string|jQuery)} el the element to find
+	 * @param {integer} num_tries the number of times to test for existence
+	 * @param {integer} timeout the interval between tries
+	 * @param {function} success the callback to execute when/if the el is found
+	 * @returns {function} a function that will initiate the polling process
+	 */
 	function pollForElement(el, num_tries, timeout, success) {
 		var callback = function() {
 			var exists = $(el).length != 0;
