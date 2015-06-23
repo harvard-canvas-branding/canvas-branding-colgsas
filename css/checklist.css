@@ -1,0 +1,12 @@
+/*
+ * This overrides the background image on the "Setup Checklist" (Canvas's course wizard).
+ *
+ * The photo is from HPAC's photo gallery.
+ * 
+ * Gallery URL: http://hpac.harvard.edu/pages/photos
+ * Photo URL: http://hpac.harvard.edu/files/hpac/files/022210_stock_jc_047_124407_978454_1.jpg
+ */
+.ic-wizard-box {
+    background: url("../img/john_harvard_statue.jpg") no-repeat center center !important;
+    background-size: 100% auto !important;
+}
