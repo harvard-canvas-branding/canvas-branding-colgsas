@@ -4,10 +4,7 @@
 require(['jquery'], function($) {
 
 	/**
-	 * This function checks to see if the page is the course home page.
-	 *
-	 * Only the course home page unauthorized message needs to be changed,
-	 * others should be left as-is. 
+	 * This function checks to see if the page is in the context of the course.
 	 *
 	 * @returns {Boolean} True if it is the course home, otherwise false.
 	 */
