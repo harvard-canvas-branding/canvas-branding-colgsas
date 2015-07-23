@@ -8,7 +8,7 @@ require(['jquery'], function($) {
 	 *
 	 * @returns {Boolean} True if it is the course home, otherwise false.
 	 */
-	function is_course_home_page() {
+	function is_course_page() {
 		return /^\/courses\/\d+/.test(window.location.pathname);
 	};
 
@@ -41,8 +41,8 @@ require(['jquery'], function($) {
 	};
 
 
-	// Checks if this is the home page and modifies the unauthorized message (if present).
-	if(is_course_home_page()) {
+	// Modifies the unauthorized message if present on the course page
+	if(is_course_page()) {
 		modify_unauthorized_message({
 			title: 'Not Available',
 			content: '<p>You do not currently have access to view this page. It may be that the site has not yet been published by the teaching staff, or that access to the site is restricted.</p><p>If you think you should have access, please use the "Help" link to contact support.</p>'
