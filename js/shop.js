@@ -5,7 +5,7 @@
 
 //var allowed_terms = ["69"];
 //var shopping_tool_url = "https://icommons-tools.tlt.harvard.edu/shopping";    // the url of the shopping tool
-var allowed_terms = ["345"];
+var allowed_terms = ['179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
 var shopping_tool_url = "https://icommons-tools.dev.tlt.harvard.edu/shopping";    // the url of the shopping tool
 
 /*
