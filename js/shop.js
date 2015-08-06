@@ -1,7 +1,12 @@
 // allowed_terms is a whitelist of Canvas enrollment_term_ids where shopping is allowed
 // NOTE - the term ids in allowed_terms must be strings, not ints
-var allowed_terms = ["69"];
-var shopping_tool_url = "https://icommons-tools.tlt.harvard.edu/shopping";    // the url of the shopping tool
+
+//temporarily switching the  terms and shopping link to point to Dev/Qa
+
+//var allowed_terms = ["69"];
+//var shopping_tool_url = "https://icommons-tools.tlt.harvard.edu/shopping";    // the url of the shopping tool
+var allowed_terms = ['179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
+var shopping_tool_url = "https://icommons-tools.dev.tlt.harvard.edu/shopping";    // the url of the shopping tool
 
 /*
  get the course number for the canvas course
@@ -159,7 +164,8 @@ if (authorized){
               var shopper_message_text = '<h1>You have full access to this course site ' + tooltip_link + '</h1><p><em>Note: During shopping period you can access course site materials and tools that are normally restricted to the class list. Your contributions may be visible to other students and visitors to this course site. <a href="' + remove_shopper_url + '">I want to be removed.</a></em></p>';
               var viewer_message_text = '<h1>You have limited access during shopping period ' + tooltip_link + '</h1><p>You can view the site but not receive email notifications.</p>';
               var participate_text = "<div class='tltmsg tltmsg-shop'><p class='participate-text'>Want to participate and continue to receive email notifications?<em>(students only)</em> <a class='btn btn-small btn-primary' href='" + add_shopper_url + "'>Get full access</a></p></div>";
-              var shopping_is_active_message = '<h1>All Harvard ID holders can view this course site during shopping period ' + tooltip_link + '</h1>In addition, all students can access course site materials and tools that are normally restricted to the class list. Student contributions may be visible to other students and visitors to this course site.';
+              var shopping_is_active_message = '<h1>Your current class list may include "Shoppers."' + tooltip_link + '</h1>All Harvard ID holders can view this course site during shopping period.'+
+                    'Students can choose to add themselves as "Shoppers" to participate in discussions, upload assignments, and receive notifications for this course before they are enrolled. Student contributions will be visible to other students who are also shopping this course.';
 
               var manage_shopping_li_item = jQuery('<li/>', {
                 id: 'manage-shopping',
