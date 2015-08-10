@@ -164,7 +164,7 @@ if (authorized){
               var shopper_message_text = '<h1>You have full access to this course site ' + tooltip_link + '</h1><p><em>Note: During shopping period you can access course site materials and tools that are normally restricted to the class list. Your contributions may be visible to other students and visitors to this course site. <a href="' + remove_shopper_url + '">I want to be removed.</a></em></p>';
               var viewer_message_text = '<h1>You have limited access during shopping period ' + tooltip_link + '</h1><p>You can view the site but not receive email notifications.</p>';
               var participate_text = "<div class='tltmsg tltmsg-shop'><p class='participate-text'>Want to participate and continue to receive email notifications?<em>(students only)</em> <a class='btn btn-small btn-primary' href='" + add_shopper_url + "'>Get full access</a></p></div>";
-              var shopping_is_active_message = '<h1>Your current class list may include "Shoppers."' + tooltip_link + '</h1>All Harvard ID holders can view this course site during shopping period.'+
+              var shopping_is_active_message = '<h1>Your current class list may include "Shoppers."' + tooltip_link + '</h1>All Harvard ID holders can view this course site during shopping period. '+
                     'Students can choose to add themselves as "Shoppers" to participate in discussions, upload assignments, and receive notifications for this course before they are enrolled. Student contributions will be visible to other students who are also shopping this course.';
 
               var manage_shopping_li_item = jQuery('<li/>', {
