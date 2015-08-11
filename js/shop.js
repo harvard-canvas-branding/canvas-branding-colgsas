@@ -161,9 +161,13 @@ if (authorized){
               /*
                text messages
                */
-              var shopper_message_text = '<h1>You have full access to this course site ' + tooltip_link + '</h1><p><em>Note: During shopping period you can access course site materials and tools that are normally restricted to the class list. Your contributions may be visible to other students and visitors to this course site. <a href="' + remove_shopper_url + '">I want to be removed.</a></em></p>';
-              var viewer_message_text = '<h1>You have limited access during shopping period ' + tooltip_link + '</h1><p>You can view the site but not receive email notifications.</p>';
-              var participate_text = "<div class='tltmsg tltmsg-shop'><p class='participate-text'>Want to participate and continue to receive email notifications?<em>(students only)</em> <a class='btn btn-small btn-primary' href='" + add_shopper_url + "'>Get full access</a></p></div>";
+
+              var shopper_message_text = '<div class="shop-msg-left"><h1>This course has been added to your shopping list ' + tooltip_link + '</h1><p><em>This means that you can receive notifications,'+
+                  'join discussions, and upload assignments during shopping period. Your contributions may be visible to other students who are also shopping this course. '+
+                  'Enrollment is not final until confirmation from the Registrar.</div><div class="shop-btn-right"> <a class="btn btn-small btn-primary" href="' +remove_shopper_url+ '">Remove Course</a></em></p></div>';
+              var viewer_message_text = '<div class="shop-msg-left"><h1>Students: Do you want to add this course to your shopping list? ' + tooltip_link +
+                  '</h1><p>You will be able to receive notifications, join discussions, and upload assignments. Your contributions may be visible to other students who are also shopping this course.</p></div>'+
+                  ' <div class="shop-btn-right"><a class="btn btn-small btn-primary" href="' + add_shopper_url + '">Add Course</a></div>';
               var shopping_is_active_message = '<h1>Your current class list may include "Shoppers."' + tooltip_link + '</h1>All Harvard ID holders can view this course site during shopping period. '+
                     'Students can choose to add themselves as "Shoppers" to participate in discussions, upload assignments, and receive notifications for this course before they are enrolled. Student contributions will be visible to other students who are also shopping this course.';
 
@@ -207,7 +211,6 @@ if (authorized){
                  */
                 $("ul#menu").append(manage_shopping_li_item);
                 shopping_banner.append(viewer_message_text);
-                shopping_banner.append(participate_text);
                 $('#breadcrumbs').after(shopping_banner);
               }
             }
@@ -215,7 +218,7 @@ if (authorized){
             // on course admin page for course in a whitelisted term --> disable is_public_to_auth_users
             var $iptau_checkbox = $('#course_is_public_to_auth_users');
             $iptau_checkbox.closest("div").addClass("selection-disabled");
-            $iptau_checkbox.closest("span").after('<span> <em>(this option is disabled during shopping)</em></span>');
+            $iptau_checkbox.closest("span").after('<span> <em>(this cannot be changed during shopping period)</em></span>');
             $iptau_checkbox.attr("disabled", true);
           }
         });
