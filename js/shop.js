@@ -168,7 +168,7 @@ if (authorized){
               var viewer_message_text = '<div class="shop-msg-left"><h1>Students: Do you want to add this course to your shopping list? ' + tooltip_link +
                   '</h1><p><em>You will be able to receive notifications, join discussions, and upload assignments. Your contributions may be visible to other students who are also shopping this course.</em></p></div>'+
                   ' <div class="shop-btn-right"><a class="btn btn-small btn-primary" href="' + add_shopper_url + '">Add Course</a></div>';
-              var shopping_is_active_message = '<h1>Your current class list may include "Shoppers."' + tooltip_link + '</h1><p>All Harvard ID holders can view this course site during shopping period. '+
+              var shopping_is_active_message = '<h1>Your current class list may include "Shoppers." ' + tooltip_link + '</h1><p>All Harvard ID holders can view this course site during shopping period. '+
                     'Students can choose to add themselves as "Shoppers" to participate in discussions, upload assignments, and receive notifications for this course before they are enrolled. Student contributions will be visible to other students who are also shopping this course.</p>';
 
               var manage_shopping_li_item = jQuery('<li/>', {
