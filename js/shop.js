@@ -8,6 +8,13 @@
 var allowed_terms = ['3', '4', '179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
 
 /**
+ * check to see if the '#unauthorized_message' is being rendered  and only proceed
+ * with additional checks to show shopping messages if authorized
+ * @type {boolean}
+ */
+var is_authorized = $('#unauthorized_message').length > 0 ? false : true;
+
+/**
  * Check if the term is allowed
  * @param term_id
  * @returns {boolean}
@@ -16,7 +23,16 @@ function term_allowed(term_id) {
   return jQuery.inArray(term_id, allowed_terms) > -1;
 }
 
-if(is_course && is_course_available(data['workflow_state']) && !on_special_page) {
+/**
+ * Check to see if the course is available
+ * @param course_workflow
+ * @returns {boolean}
+ */
+function is_course_available(course_workflow) {
+  return course_workflow.localeCompare('available') == 0;
+}
+
+if(is_course && !on_special_page) {
   if (is_authorized){
     var usernname = $('ul#identity > li.user_name > a').text();
     if ( !usernname ) {
@@ -24,7 +40,7 @@ if(is_course && is_course_available(data['workflow_state']) && !on_special_page)
           /*
            TLT-668 - only allow shopping for terms that are in the whitelist.
            */
-          if (term_allowed(data['enrollment_term_id'])) {
+          if (is_course_available(data['workflow_state']) && term_allowed(data['enrollment_term_id'])) {
             shopping_banner.append(no_user_canvas_login);
             $('#breadcrumbs').after(shopping_banner);
           }
@@ -38,7 +54,7 @@ if(is_course && is_course_available(data['workflow_state']) && !on_special_page)
           /*
            TLT-668 - only allow shopping for terms that are in the whitelist.
            */
-          if (term_allowed(data['enrollment_term_id'])) {
+          if (is_course_available(data['workflow_state']) && term_allowed(data['enrollment_term_id'])) {
             var c_id = data['id'];
             if (course_id == c_id) {
               var num_enrollments = data['enrollments'].length;
