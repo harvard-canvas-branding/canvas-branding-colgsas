@@ -223,7 +223,7 @@ if (authorized){
                 /*
                  display the banner formatted above
                  */
-                if (is_shopper || is_teacher) {
+                if (is_shopper || is_teacher || is_student) {
                   $('#breadcrumbs').after(shopping_banner);
                 }
               }else{
