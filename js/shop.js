@@ -7,6 +7,64 @@
  */
 var allowed_terms = ['3', '4', '179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
 
+var current_user_id = ENV['current_user_id'];
+var user_url = '/api/v1/users/' + current_user_id + '/profile';
+var course_id = get_course_number();
+var course_url = '/api/v1/courses/' + course_id ;
+var login_url = window.location.origin+"/login";
+var shopping_tool_url = "https://icommons-tools.dev.tlt.harvard.edu/shopping";
+
+/**
+ * Tool tip text and html link
+ * @type {string}
+ */
+var shopping_help_doc_url = 'https://wiki.harvard.edu/confluence/display/canvas/Course+Shopping';
+var data_tooltip = 'More info about access during shopping period';
+var tooltip_link = '<a data-tooltip title="' + data_tooltip + '" target="_blank" href="' +
+  shopping_help_doc_url + '"><i class="icon-question"></i></a>';
+
+var no_user_canvas_login = '<div class="tltmsg tltmsg-shop"><p class="participate-text">Students: ' +
+  '<a href="'+login_url+'">login</a> to get more access during shopping period.' + tooltip_link + '</p></div>';
+
+var is_course = (course_id > 0);
+var user_enrolled = false;
+var is_shopper = false;
+var is_teacher = false;
+var is_student = false;
+
+/**
+ * Create the div that will hold the shoping banner
+ * @type {html element}
+ */
+var shopping_banner = jQuery('<div/>', {
+  id: 'course-shopping',
+  class: 'tltmsg'
+});
+
+/**
+ * Are we on an admin page
+ * @type {boolean}
+ */
+var on_admin_page = ((window.location.pathname).indexOf('settings') != -1);
+
+/**
+ * Are we on the speed grader page
+ * @type {boolean}
+ */
+var on_speed_grader_page = ((window.location.pathname).indexOf('speed_grader') != -1);
+
+/**
+ * Are we on the submissions page
+ * @type {boolean}
+ */
+var on_submissions_page = ((window.location.pathname).indexOf('submissions') != -1);
+
+/**
+ * Are we on any of the special pages described above
+ * @type {boolean}
+ */
+var on_special_page = on_admin_page || on_speed_grader_page || on_submissions_page;
+
 /**
  * check to see if the '#unauthorized_message' is being rendered  and only proceed
  * with additional checks to show shopping messages if authorized
