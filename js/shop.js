@@ -4,8 +4,8 @@
 //temporarily switching the  terms and shopping link to point to Dev/Qa
 
 var allowed_terms = ["69"];
-var shopping_tool_url = "https://icommons-tools.tlt.harvard.edu/shopping";    // the url of the shopping tool
-// var allowed_terms = ['179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
+var shopping_tool_url = "https://icommons-tools.dev.tlt.harvard.edu/shopping";    // the url of the shopping tool
+var allowed_terms = ['3', '4', '179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
 // var shopping_tool_url = "https://icommons-tools.stage.tlt.harvard.edu/shopping";    // the url of the shopping tool
 
 /*
@@ -163,21 +163,27 @@ if (authorized){
                */
 
               var shopper_message_text = '<div class="shop-msg-left"><h1>This course has been added to your shopping ' +
-                  'list ' + tooltip_link + '</h1><p><em>This means that you can receive notifications, ' +
-                  'join discussions, and upload assignments during shopping period. Your contributions may be ' +
-                  'visible to other students who are also shopping this course. Enrollment is not final until ' +
-                  'confirmation from the Registrar.</em></p></div><div class="shop-btn-right">' +
+                  'list ' + tooltip_link + '</h1><p>This means that you can receive notifications, join discussions, ' +
+                  'watch lecture videos, and upload assignments during shopping period. Your contributions will be ' +
+                  'visible to other students who are also shopping this course. You will be removed from this course ' +
+                  'at the end of shopping period unless you officially enroll through the Registrar’s office.' +
+                  '</p></div><div class="shop-btn-right">' +
                   '<a class="btn btn-small btn-primary" href="' +remove_shopper_url+ '">Remove Course</a></div>';
-              var viewer_message_text = '<div class="shop-msg-left"><h1>Students: Do you want to add this course ' +
-                  'to your shopping list? ' + tooltip_link + '</h1><p><em>You will be able to receive notifications, ' +
-                  'join discussions, and upload assignments.</em></p><p><em>Your contributions may be visible to ' +
-                  'other students who are also shopping this course.</em></p></div><div class="shop-btn-right">' +
+
+              var viewer_message_text = '<div class="shop-msg-left"><h1>Students: do you want to add this course to ' +
+                  'your shopping list?' + tooltip_link +'</h1><p>Click the Add Course button to receive ' +
+                  'notifications, join discussions, watch lecture videos, and upload assignments. You must enroll ' +
+                  'through the Registrar’s office to be officially enrolled as a Student in this course.' +
+                  '</p></div><div class="shop-btn-right">' +
                   '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">Add Course</a></div>';
-              var shopping_is_active_message = '<h1>Your current class list may include "Shoppers." ' + tooltip_link +
-                  '</h1><p>All Harvard ID holders can view this course site during shopping period.</p>' +
-                  '<p>Students can choose to add themselves as "Shoppers" to participate in discussions, ' +
-                  'upload assignments, and receive notifications for this course before they are enrolled. ' +
-                  'Student contributions will be visible to other students who are also shopping this course.</p>';
+
+              var shopping_is_active_message = '<h1>Your current class list may include Shoppers. ' + tooltip_link +
+                  '</h1><p>All Harvard ID holders can view this course site during shopping period. Students ' +
+                  'can choose to add themselves as Shoppers to participate in discussions, upload assignments, watch ' +
+                  'lecture videos, and receive notifications for this course before they are officially enrolled. '+
+                  'Student contributions will be visible to other students who are also shopping this course. At the '+
+                  'end of shopping period, Shoppers who have not officially enrolled as Students or Guests in the '+
+                  'course through the Registrar’s office will be removed from the class list.</p>';
 
               var manage_shopping_li_item = jQuery('<li/>', {
                 id: 'manage-shopping',
