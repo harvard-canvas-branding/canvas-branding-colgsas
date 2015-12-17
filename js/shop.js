@@ -132,7 +132,7 @@ if (authorized){
                   user_enrolled = true;
 
                   is_shopper = (erole == 'Shopper');
-                  is_student = (erole == 'StudentEnrollment-Viewer');
+                  is_student = (erole == 'StudentEnrollment') || (erole == 'Guest');
                   /* Base the teacher check on 'type' instead of 'role' to capture most teacher roles. Since Designer and
                   	TA have their own special type, they are checked separately. Student/Shopper
                    check would still use role as they are both of type 'student'
@@ -161,6 +161,10 @@ if (authorized){
               /*
                text messages
                */
+
+              var student_message_text = '<h1>All Harvard ID holders can view this course site during shopping ' +
+                  'period. ' + tooltip_link + '</h1><p>Your contributions will be visible to other students who ' +
+                  'are also shopping this course.</p>';
 
               var shopper_message_text = '<div class="shop-msg-left"><h1>This course has been added to your shopping ' +
                   'list ' + tooltip_link + '</h1><p>This means that you can receive notifications, join discussions, ' +
@@ -212,6 +216,9 @@ if (authorized){
                 }
                 else if (is_teacher) {
                   shopping_banner.append(shopping_is_active_message);
+                }
+                else if(is_student){
+                  shopping_banner.append(student_message_text);
                 }
                 /*
                  display the banner formatted above
