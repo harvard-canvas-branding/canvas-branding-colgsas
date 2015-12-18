@@ -44,7 +44,7 @@ if (unauthorized_message_not_shown){
             var num_enrollments = course_enrollments.length;
             for (var n = 0; n < num_enrollments; n++) {
               var erole = course_enrollments[n]['role'];
-              var type =  course_enrollments['type'];
+              var type =  course_enrollments[n]['type'];
               user_enrolled = true;
               is_shopper = (erole == 'Shopper');
               is_student = (erole == 'StudentEnrollment') || (erole == 'Guest');
