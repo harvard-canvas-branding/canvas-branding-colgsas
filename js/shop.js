@@ -7,6 +7,15 @@
  */
 var allowed_terms = ['3', '4', '179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
 
+/**
+ * Check if the term id is in the allowed terms list
+ * @param term_id
+ * @returns {boolean}
+ */
+function term_allowed(term_id) {
+  return jQuery.inArray(term_id, allowed_terms) > -1;
+}
+
 var current_user_id = ENV['current_user_id'];
 var user_url = '/api/v1/users/' + current_user_id + '/profile';
 var course_id = get_course_number();
