@@ -7,7 +7,7 @@
  */
 var allowed_terms = ['3', '4', '179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
 
-if (is_unauthorized_message_shown){
+if (unauthorized_message_not_shown){
   var un = $('ul#identity > li.user_name > a').text();
   if ( !un ) {
     $.getJSON(course_url, function( data ) {
@@ -28,7 +28,7 @@ if (is_unauthorized_message_shown){
     var sis_user_id = '';
     $.getJSON(user_url, function( data ) {
       sis_user_id = get_sis_user_id(data);
-      if (course_id > 0) {
+      if (course_id_is_valid) {
         $.getJSON(course_url, function( data ) {
 
           var course_is_available = is_course_available(data['workflow_state']);
