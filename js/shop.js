@@ -19,7 +19,7 @@ if (is_unauthorized_message_shown){
         /*
          TLT-668 - only allow shopping for terms that are in the whitelist.
          */
-        if (is_term_allowed(data['enrollment_term_id'])) {
+        if (is_term_allowed(data['enrollment_term_id'], allowed_terms)) {
           shopping_banner.append(no_user_canvas_login);
           $('#breadcrumbs').after(shopping_banner);
         }
@@ -40,7 +40,7 @@ if (is_unauthorized_message_shown){
             /*
              TLT-668 - only allow shopping for terms that are in the whitelist.
              */
-            if (is_term_allowed(data['enrollment_term_id'])) {
+            if (is_term_allowed(data['enrollment_term_id'], allowed_terms)) {
               var c_id = data['id'];
               if (course_id == c_id) {
                 var num_enrollments = data['enrollments'].length;
@@ -107,7 +107,7 @@ if (is_unauthorized_message_shown){
                 $('#breadcrumbs').after(shopping_banner);
               }
             }
-          } else if (on_admin_page && is_term_allowed(data['enrollment_term_id'])) {
+          } else if (on_admin_page && is_term_allowed(data['enrollment_term_id'], allowed_terms)) {
             // on course admin page for course in a whitelisted term --> disable is_public_to_auth_users
             var $iptau_checkbox = $('#course_is_public_to_auth_users');
             $iptau_checkbox.closest("div").addClass("selection-disabled");
