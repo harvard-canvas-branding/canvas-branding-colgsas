@@ -7,7 +7,20 @@
  */
 var allowed_terms = ['3', '4', '179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
 
-if (unauthorized_message_not_shown){
+var course_id_is_valid = (course_id > 0);
+var user_enrolled = false;
+var is_shopper = false;
+var is_teacher = false;
+var is_student = false;
+
+/**
+ * check to see if the '#unauthorized_message' is being rendered  and only proceed
+ * with additional checks to show shopping messages if authorized
+ * @type {boolean}
+ */
+var authorized = $('#unauthorized_message').length > 0 ? false : true;
+
+if (authorized){
   var un = $('ul#identity > li.user_name > a').text();
   if ( !un ) {
     $.getJSON(course_url, function( data ) {
@@ -76,7 +89,7 @@ if (unauthorized_message_not_shown){
                 shopping_banner.append(shopping_get_shopper_banner_text(remove_shopper_url));
               }
               else if (is_teacher) {
-                shopping_banner.append(shopping_get_is_active_banner_text());
+                shopping_banner.append(shopping_get_teacher_banner_text());
               }
               else if(is_student){
                 shopping_banner.append(shopping_get_student_banner_text());
