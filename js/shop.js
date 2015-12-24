@@ -9,11 +9,11 @@
 /**
  * terms for dev
  * var allowed_terms = ['3', '4'];
- * /
+ */
 
 /**
  * updated allowed terms with correct terms before deploying to prod
- * /
+ */
 var allowed_terms = [];
 
 var course_id_is_valid = (course_id > 0);
