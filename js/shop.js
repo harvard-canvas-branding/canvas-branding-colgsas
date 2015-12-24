@@ -5,7 +5,16 @@
  * NOTE - the term ids in allowed_terms must be strings, not ints
  * @type {string[]}
  */
-var allowed_terms = ['3', '4', '179', '595', '596', '603', '487', '569', '1','8','447','591','597', '342'];
+
+/**
+ * terms for dev
+ * var allowed_terms = ['3', '4'];
+ * /
+
+/**
+ * updated allowed terms with correct terms before deploying to prod
+ * /
+var allowed_terms = [];
 
 var course_id_is_valid = (course_id > 0);
 var user_enrolled = false;
