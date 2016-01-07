@@ -184,7 +184,7 @@ var no_user_canvas_login = '<div class="tltmsg tltmsg-shop"><p class="participat
 /**
  * updated allowed terms with correct terms before deploying to prod
  */
-var allowed_terms = ['3', '4'];
+var allowed_terms = ['1', '3', '4'];
 
 var course_id_is_valid = (course_id > 0);
 var user_enrolled = false;
