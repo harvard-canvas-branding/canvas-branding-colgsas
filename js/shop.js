@@ -198,8 +198,10 @@ var is_student = false;
 var authorized = $('#unauthorized_message').length > 0 ? false : true;
 
 if (authorized){
-  var un = $('ul#identity > li.user_name > a').text();
-  if ( !un ) {
+
+  // check if we have a current user
+  if (!current_user_id ) {
+    //user is not logged in to Canvas.
     $.getJSON(course_url, function( data ) {
       /*
        Check to see the course is in the 'available' (Published) state before showing
