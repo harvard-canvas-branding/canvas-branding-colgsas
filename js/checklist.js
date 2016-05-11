@@ -1,8 +1,13 @@
 (function() {
-	// Ensure that these scripts only run on course pages
-	if ("/courses/" == window.location.pathname.substr(0, "/courses/".length)) {
-		require(['jquery', 'jsx/course_wizard/ListItems'], modify_setup_checklist);
-		require(['jquery'], modify_import_content_page);
+	// Ensure that these scripts only run on the appropriate pages
+	var is_course_page = ("/courses/" == window.location.pathname.substr(0, "/courses/".length));
+	if (is_course_page) {
+		if(window.ENV.COURSE_WIZARD) {
+			require(['jquery', 'jsx/course_wizard/ListItems'], modify_setup_checklist);
+		}
+		if (/^\/courses\/\d+\/content_migrations/.test(window.location.pathname)) {
+			require(['jquery'], modify_import_content_page);
+		}
 	}
 	
 	/**
@@ -16,21 +21,15 @@
 		
 		// Holds the content that will be added to the page
 		var html = "<p>If you would like to incorporate content from a previous iSite, please contact the Academic Technology Group at <a href=\"mailto:atg@fas.harvard.edu\">atg@fas.harvard.edu</a>.</p>";
-		
-		// Holds a boolean to indicate if this is the "Import Content" page,
-		// because this code should only be executed there
-		var is_content_migration_page = /^\/courses\/\d+\/content_migrations/.test(window.location.pathname);
-		
+
 		// Holds a function that when executed, will call its callback when the selector returns an element.
 		// The assumption is that the element may not exist in the DOM on the first try.
 		var poll_for_element = pollForElement("#migrationConverterContainer > h1", 20, 100, function($el) {
 			$el.after(html);
 		});
-	
-		if (is_content_migration_page) {
-			poll_for_element();
-		}
-	
+
+		poll_for_element();
+
 		/**
 		 * Poll the DOM for the existence of an element and then execute
 		 * the "success" callback when/if the element is found to exist.
