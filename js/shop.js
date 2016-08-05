@@ -243,28 +243,10 @@ if (authorized){
               is_teacher =  (type == 'teacher' || type == 'ta' ||type == 'designer' );
             }
 
-            var login_id = '?canvas_login_id=' + sis_user_id;
-            var course_and_user_id_param = course_id + login_id;
             var add_shopper_url = shopping_tool_url + '/shop_course/' + course_and_user_id_param;
             var remove_shopper_url = shopping_tool_url + '/remove_shopper_role/' + course_and_user_id_param;
-            var manage_shopping_page_url = shopping_tool_url + '/my_list' + login_id;
-            var manage_shopping_li_item = jQuery('<li/>', {
-              id: 'manage-shopping',
-              class: 'menu-item'
-            });
-            var manage_shopping_link = jQuery('<a/>', {
-              id: 'manage-shopping-page-link',
-              class: 'menu-item-no-drop',
-              href: manage_shopping_page_url,
-              text: "Courses I'm Shopping"
-            });
-            /*
-             build the Manage Shopping menu item
-             */
             if (user_enrolled) {
-              manage_shopping_li_item.append(manage_shopping_link);
               if (is_shopper) {
-                $("ul#menu").append(manage_shopping_li_item);
                 shopping_banner.append(shopping_get_shopper_banner_text(remove_shopper_url));
               }
               else if (is_teacher) {
@@ -281,7 +263,6 @@ if (authorized){
                If logged in user is not enrolled, then display generic shopping
                message to authorized user
                */
-              $("ul#menu").append(manage_shopping_li_item);
               shopping_banner.append(shopping_get_viewer_banner_text(add_shopper_url));
               $('#breadcrumbs').after(shopping_banner);
             }
