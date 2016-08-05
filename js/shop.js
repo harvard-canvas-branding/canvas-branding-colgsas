@@ -160,13 +160,13 @@ var shopping_tool_url = "https://icommons-tools.tlt.harvard.edu/shopping";
  * Tool tip text and html link
  * @type {string}
  */
-var shopping_help_doc_url = 'https://wiki.harvard.edu/confluence/display/canvas/Course+Shopping';
-var data_tooltip = 'More info about access during shopping period';
+var shopping_help_doc_url = 'https://wiki.harvard.edu/confluence/pages/viewpage.action?pageId=168134774';
+var data_tooltip = 'More info about access during course selection period';
 var tooltip_link = '<a data-tooltip title="' + data_tooltip + '" target="_blank" href="' +
   shopping_help_doc_url + '"><i class="icon-question"></i></a>';
 
 var no_user_canvas_login = '<div class="tltmsg tltmsg-shop"><p class="participate-text">Students: ' +
-  '<a href="'+login_url+'">login</a> to get more access during shopping period.' + tooltip_link + '</p></div>';
+  '<a href="'+login_url+'">login</a> to get more access during course selection period.' + tooltip_link + '</p></div>';
 
 
 /**
@@ -200,8 +200,8 @@ var is_student = false;
 var authorized = $('#unauthorized_message').length > 0 ? false : true;
 
 if (authorized){
-  var un = $('ul#identity > li.user_name > a').text();
-  if ( !un ) {
+  if ( $('#global_nav_login_link').length > 0 ) {
+    // user is unauthenticated
     $.getJSON(course_url, function( data ) {
       /*
        Check to see the course is in the 'available' (Published) state before showing
@@ -289,7 +289,7 @@ if (authorized){
             // on course admin page for course in a whitelisted term --> disable is_public_to_auth_users
             var $iptau_checkbox = $('#course_is_public_to_auth_users');
             $iptau_checkbox.closest("div").addClass("selection-disabled");
-            $iptau_checkbox.closest("span").after('<span> <em>(this cannot be changed during shopping period)</em></span>');
+            $iptau_checkbox.closest("span").after('<span> <em>(this cannot be changed during course selection period)</em></span>');
             $iptau_checkbox.attr("disabled", true);
           }
         });
