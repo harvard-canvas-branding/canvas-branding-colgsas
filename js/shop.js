@@ -94,18 +94,22 @@ function shopping_get_student_banner_text() {
 }
 
 /**
- * Get the banner text for shoppers/prospective enrollees
+ * Get the banner text for prospective enrollees (previously called shoppers)
  * @param remove_shopper_url
  * @returns {string} shopper_message_text
  */
 function shopping_get_shopper_banner_text(remove_shopper_url) {
-  var shopper_message_text = '<div class="shop-msg-left"><h1>This course has been added to your Crimson ' +
-    'Cart. ' + tooltip_link + '</h1><p>This means that you can receive notifications, join discussions, ' +
-    'watch lecture videos, and upload assignments during course selection period. Your contributions will be ' +
-    'visible to other students who are also participating in this course. You will be removed from this course ' +
-    'at the end of the course selection period unless you officially enroll through the Registrar’s office.' +
-    '</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + remove_shopper_url + '">Remove from Crimson Cart</a></div>';
+  var shopper_message_text = '<div class="shop-msg-left"><h1>This course has ' +
+    'been added to your Crimson Cart. ' + tooltip_link + '</h1>' +
+    '<p>This means that you can receive notifications, join discussions, ' +
+    'watch lecture videos, and upload assignments during course selection ' +
+    'period. Your contributions will be visible to other students who are ' +
+    'also participating in this course. You will be removed from this course ' +
+    'at the end of the course selection period unless you click on "enroll" ' +
+    'in my.harvard to be officially enrolled by the Registrar as a Student ' +
+    'in this course.</p></div><div class="shop-btn-right">' +
+    '<a class="btn btn-small btn-primary" href="' + remove_shopper_url + '">' +
+    'Remove from Crimson Cart</a></div>';
   return shopper_message_text;
 }
 
@@ -115,12 +119,15 @@ function shopping_get_shopper_banner_text(remove_shopper_url) {
  * @returns {string} viewer_message_text
  */
 function shopping_get_viewer_banner_text(add_shopper_url) {
-  var viewer_message_text = '<div class="shop-msg-left"><h1>Students: add this course to your Crimson Cart ' +
-    'in my.harvard' + tooltip_link + '</h1><p> to receive notifications, join discussions, watch lecture ' +
-    'videos, and upload assignments. There may be a short delay after you add the course to your cart. You ' +
-    'must enroll through the Registrar’s office to be officially enrolled as a Student in this course.' +
-    '</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">Add to Crimson Cart</a></div>';
+  var viewer_message_text = '<div class="shop-msg-left"><h1>Students: add ' +
+    'this course to your Crimson Cart in my.harvard' + tooltip_link + '</h1>' +
+    '<p>You will be able to receive notifications, join discussions, watch ' +
+    'lecture videos, and upload assignments. There may be a short delay ' +
+    'after you add the course to your cart. You must click on "enroll" in ' +
+    'my.harvard to be officially enrolled by the Registrar as a Student in ' +
+    'this course.</p></div><div class="shop-btn-right">' +
+    '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">' +
+    'Add to Crimson Cart</a></div>';
   return viewer_message_text;
 }
 
@@ -160,13 +167,13 @@ var shopping_tool_url = "https://icommons-tools.tlt.harvard.edu/shopping";
  * Tool tip text and html link
  * @type {string}
  */
-var shopping_help_doc_url = 'https://wiki.harvard.edu/confluence/display/canvas/Course+Shopping';
-var data_tooltip = 'More info about access during shopping period';
+var shopping_help_doc_url = 'https://wiki.harvard.edu/confluence/pages/viewpage.action?pageId=168134774';
+var data_tooltip = 'More info about access during course selection period';
 var tooltip_link = '<a data-tooltip title="' + data_tooltip + '" target="_blank" href="' +
   shopping_help_doc_url + '"><i class="icon-question"></i></a>';
 
 var no_user_canvas_login = '<div class="tltmsg tltmsg-shop"><p class="participate-text">Students: ' +
-  '<a href="'+login_url+'">login</a> to get more access during shopping period.' + tooltip_link + '</p></div>';
+  '<a href="'+login_url+'">login</a> to get more access during course selection period.' + tooltip_link + '</p></div>';
 
 
 /**
@@ -200,8 +207,8 @@ var is_student = false;
 var authorized = $('#unauthorized_message').length > 0 ? false : true;
 
 if (authorized){
-  var un = $('ul#identity > li.user_name > a').text();
-  if ( !un ) {
+  if ( $('#global_nav_login_link').length > 0 ) {
+    // user is unauthenticated
     $.getJSON(course_url, function( data ) {
       /*
        Check to see the course is in the 'available' (Published) state before showing
@@ -243,28 +250,10 @@ if (authorized){
               is_teacher =  (type == 'teacher' || type == 'ta' ||type == 'designer' );
             }
 
-            var login_id = '?canvas_login_id=' + sis_user_id;
-            var course_and_user_id_param = course_id + login_id;
             var add_shopper_url = shopping_tool_url + '/shop_course/' + course_and_user_id_param;
             var remove_shopper_url = shopping_tool_url + '/remove_shopper_role/' + course_and_user_id_param;
-            var manage_shopping_page_url = shopping_tool_url + '/my_list' + login_id;
-            var manage_shopping_li_item = jQuery('<li/>', {
-              id: 'manage-shopping',
-              class: 'menu-item'
-            });
-            var manage_shopping_link = jQuery('<a/>', {
-              id: 'manage-shopping-page-link',
-              class: 'menu-item-no-drop',
-              href: manage_shopping_page_url,
-              text: "Courses I'm Shopping"
-            });
-            /*
-             build the Manage Shopping menu item
-             */
             if (user_enrolled) {
-              manage_shopping_li_item.append(manage_shopping_link);
               if (is_shopper) {
-                $("ul#menu").append(manage_shopping_li_item);
                 shopping_banner.append(shopping_get_shopper_banner_text(remove_shopper_url));
               }
               else if (is_teacher) {
@@ -281,7 +270,6 @@ if (authorized){
                If logged in user is not enrolled, then display generic shopping
                message to authorized user
                */
-              $("ul#menu").append(manage_shopping_li_item);
               shopping_banner.append(shopping_get_viewer_banner_text(add_shopper_url));
               $('#breadcrumbs').after(shopping_banner);
             }
@@ -289,7 +277,7 @@ if (authorized){
             // on course admin page for course in a whitelisted term --> disable is_public_to_auth_users
             var $iptau_checkbox = $('#course_is_public_to_auth_users');
             $iptau_checkbox.closest("div").addClass("selection-disabled");
-            $iptau_checkbox.closest("span").after('<span> <em>(this cannot be changed during shopping period)</em></span>');
+            $iptau_checkbox.closest("span").after('<span> <em>(this cannot be changed during course selection period)</em></span>');
             $iptau_checkbox.attr("disabled", true);
           }
         });
