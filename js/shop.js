@@ -87,25 +87,25 @@ function is_term_allowed(term_id, allowed_terms) {
  * @returns {string} student_message_text
  */
 function shopping_get_student_banner_text() {
-  var student_message_text = '<h1>All Harvard ID holders can view this course site during shopping ' +
-    'period. ' + tooltip_link + '</h1><p>Your contributions will be visible to other students who ' +
-    'are also shopping this course.</p>';
+  var student_message_text = '<h1>All Harvard ID holders can view this course site during the course ' +
+    'selection period. ' + tooltip_link + '</h1><p>Your contributions will be visible to other students who ' +
+    'are also participating in this course.</p>';
   return student_message_text;
 }
 
 /**
- * Get the banner text for shoppers
+ * Get the banner text for shoppers/prospective enrollees
  * @param remove_shopper_url
  * @returns {string} shopper_message_text
  */
 function shopping_get_shopper_banner_text(remove_shopper_url) {
-  var shopper_message_text = '<div class="shop-msg-left"><h1>This course has been added to your shopping ' +
-    'list ' + tooltip_link + '</h1><p>This means that you can receive notifications, join discussions, ' +
-    'watch lecture videos, and upload assignments during shopping period. Your contributions will be ' +
-    'visible to other students who are also shopping this course. You will be removed from this course ' +
-    'at the end of shopping period unless you officially enroll through the Registrar’s office.' +
+  var shopper_message_text = '<div class="shop-msg-left"><h1>This course has been added to your Crimson ' +
+    'Cart. ' + tooltip_link + '</h1><p>This means that you can receive notifications, join discussions, ' +
+    'watch lecture videos, and upload assignments during course selection period. Your contributions will be ' +
+    'visible to other students who are also participating in this course. You will be removed from this course ' +
+    'at the end of the course selection period unless you officially enroll through the Registrar’s office.' +
     '</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + remove_shopper_url + '">Remove Course</a></div>';
+    '<a class="btn btn-small btn-primary" href="' + remove_shopper_url + '">Remove from Crimson Cart</a></div>';
   return shopper_message_text;
 }
 
@@ -115,12 +115,12 @@ function shopping_get_shopper_banner_text(remove_shopper_url) {
  * @returns {string} viewer_message_text
  */
 function shopping_get_viewer_banner_text(add_shopper_url) {
-  var viewer_message_text = '<div class="shop-msg-left"><h1>Students: do you want to add this course to ' +
-    'your shopping list?' + tooltip_link + '</h1><p>Click the Add Course button to receive ' +
-    'notifications, join discussions, watch lecture videos, and upload assignments. You must enroll ' +
-    'through the Registrar’s office to be officially enrolled as a Student in this course.' +
+  var viewer_message_text = '<div class="shop-msg-left"><h1>Students: add this course to your Crimson Cart ' +
+    'in my.harvard' + tooltip_link + '</h1><p> to receive notifications, join discussions, watch lecture ' +
+    'videos, and upload assignments. There may be a short delay after you add the course to your cart. You ' +
+    'must enroll through the Registrar’s office to be officially enrolled as a Student in this course.' +
     '</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">Add Course</a></div>';
+    '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">Add to Crimson Cart</a></div>';
   return viewer_message_text;
 }
 
@@ -129,13 +129,13 @@ function shopping_get_viewer_banner_text(add_shopper_url) {
  * @returns {string} shopping_is_active_message
  */
 function shopping_get_teacher_banner_text() {
-  var shopping_is_active_message = '<h1>Your current class list may include Shoppers. ' + tooltip_link +
-    '</h1><p>All Harvard ID holders can view this course site during shopping period. Students ' +
-    'can choose to add themselves as Shoppers to participate in discussions, upload assignments, watch ' +
-    'lecture videos, and receive notifications for this course before they are officially enrolled. ' +
-    'Student contributions will be visible to other students who are also shopping this course. At the ' +
-    'end of shopping period, Shoppers who have not officially enrolled as Students or Guests in the ' +
-    'course through the Registrar’s office will be removed from the class list.</p>';
+  var shopping_is_active_message = '<h1>Your current class list may include Prospective Enrollees. ' + tooltip_link +
+    '</h1><p>All Harvard ID holders can view this course site during course selection period. Students ' +
+    'can choose to add this course to their Crimson Cart to participate in discussions, upload assignments, watch ' +
+    'lecture videos, and receive notifications for this course before they are officially enrolled through the ' +
+    'Registrar. All Student contributions will be visible to other students who are also participating in this ' +
+    'course. At the end of the course selection period, Prospective Enrollees who have not officially enrolled as ' +
+    'Students or Guests in the course through the Registrar’s office will be removed from the class list.</p>';
   return shopping_is_active_message;
 }
 
