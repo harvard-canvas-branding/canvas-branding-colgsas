@@ -1,9 +1,9 @@
 
 /**
- * Create the div that will hold the shoping banner
+ * Create the div that will hold the course selection banner
  * @type {html element}
  */
-var shopping_banner = jQuery('<div/>', {
+var course_selection_banner = jQuery('<div/>', {
   id: 'course-shopping',
   class: 'tltmsg'
 });
@@ -86,7 +86,7 @@ function is_term_allowed(term_id, allowed_terms) {
  * Get the banner text for students and guests
  * @returns {string} student_message_text
  */
-function shopping_get_student_banner_text() {
+function course_selection_get_student_banner_text() {
   var student_message_text = '<h1>All Harvard ID holders can view this course site during the course ' +
     'selection period. ' + tooltip_link + '</h1><p>Your contributions will be visible to other students who ' +
     'are also participating in this course.</p>';
@@ -95,11 +95,11 @@ function shopping_get_student_banner_text() {
 
 /**
  * Get the banner text for prospective enrollees (previously called shoppers)
- * @param remove_shopper_url
- * @returns {string} shopper_message_text
+ * @param remove_course_url
+ * @returns {string} prospective_enrollee_message_text
  */
-function shopping_get_shopper_banner_text(remove_shopper_url) {
-  var shopper_message_text = '<div class="shop-msg-left"><h1>This course has ' +
+function course_selection_get_prospective_enrollee_banner_text(remove_course_url) {
+  var prospective_enrollee_message_text = '<div class="shop-msg-left"><h1>This course has ' +
     'been added to your Crimson Cart. ' + tooltip_link + '</h1>' +
     '<p>This means that you can receive notifications, join discussions, ' +
     'watch lecture videos, and upload assignments during course selection ' +
@@ -108,17 +108,17 @@ function shopping_get_shopper_banner_text(remove_shopper_url) {
     'at the end of the course selection period unless you click on "enroll" ' +
     'in my.harvard to be officially enrolled by the Registrar as a Student ' +
     'in this course.</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + remove_shopper_url + '">' +
+    '<a class="btn btn-small btn-primary" href="' + remove_course_url + '">' +
     'Remove from Crimson Cart</a></div>';
-  return shopper_message_text;
+  return prospective_enrollee_message_text;
 }
 
 /**
  * Get the banner text for authenticated users (previously called viewers)
- * @param add_shopper_url
+ * @param add_course_url
  * @returns {string} viewer_message_text
  */
-function shopping_get_viewer_banner_text(add_shopper_url) {
+function course_selection_get_viewer_banner_text(add_course_url) {
   var viewer_message_text = '<div class="shop-msg-left"><h1>Students: add ' +
     'this course to your Crimson Cart in my.harvard' + tooltip_link + '</h1>' +
     '<p>You will be able to receive notifications, join discussions, watch ' +
@@ -126,82 +126,63 @@ function shopping_get_viewer_banner_text(add_shopper_url) {
     'after you add the course to your cart. You must click on "enroll" in ' +
     'my.harvard to be officially enrolled by the Registrar as a Student in ' +
     'this course.</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">' +
+    '<a class="btn btn-small btn-primary" href="' + add_course_url + '">' +
     'Add to Crimson Cart</a></div>';
   return viewer_message_text;
 }
 
 /**
  * Get the banner text for teachers
- * @returns {string} shopping_is_active_message
+ * @returns {string} course_selection_is_active_message
  */
-function shopping_get_teacher_banner_text() {
-  var shopping_is_active_message = '<h1>Your current class list may include Prospective Enrollees. ' + tooltip_link +
+function course_selection_get_teacher_banner_text() {
+  var course_selection_is_active_message = '<h1>Your current class list may include Prospective Enrollees. ' + tooltip_link +
     '</h1><p>All Harvard ID holders can view this course site during course selection period. Students ' +
     'can choose to add this course to their Crimson Cart to participate in discussions, upload assignments, watch ' +
     'lecture videos, and receive notifications for this course before they are officially enrolled through the ' +
     'Registrar. All Student contributions will be visible to other students who are also participating in this ' +
     'course. At the end of the course selection period, Prospective Enrollees who have not officially enrolled as ' +
     'Students or Guests in the course through the Registrar’s office will be removed from the class list.</p>';
-  return shopping_is_active_message;
+  return course_selection_is_active_message;
 }
 
 /**
- * Common shopping code
+ * Common course selection code
  */
 
 var current_user_id = ENV['current_user_id'];
 var user_url = '/api/v1/users/' + current_user_id + '/profile';
 var course_id = get_course_number();
+var course_id_is_valid = (course_id > 0);
 var course_url = '/api/v1/courses/' + course_id;
 var login_url = window.location.origin+"/login";
-
-/**
- * dev tool shopping url
- * var shopping_tool_url = "https://icommons-tools.dev.tlt.harvard.edu/shopping";
- */
-
-var shopping_tool_url = "https://icommons-tools.tlt.harvard.edu/shopping";
 
 /**
  * Tool tip text and html link
  * @type {string}
  */
-var shopping_help_doc_url = 'https://wiki.harvard.edu/confluence/pages/viewpage.action?pageId=168134774';
+var course_selection_help_doc_url = 'https://wiki.harvard.edu/confluence/pages/viewpage.action?pageId=168134774';
 var data_tooltip = 'More info about access during course selection period';
 var tooltip_link = '<a data-tooltip title="' + data_tooltip + '" target="_blank" href="' +
-  shopping_help_doc_url + '"><i class="icon-question"></i></a>';
+  course_selection_help_doc_url + '"><i class="icon-question"></i></a>';
 
 var no_user_canvas_login = '<div class="tltmsg tltmsg-shop"><p class="participate-text">Students: ' +
   '<a href="'+login_url+'">login</a> to get more access during course selection period.' + tooltip_link + '</p></div>';
 
 
 /**
- * allowed_terms is a white list of Canvas enrollment_term_ids where shopping is allowed
- * for a specific school
+ * allowed_terms is a white list of Canvas enrollment_term_ids where course
+ * selection is allowed for a specific school
  * NOTE - the term ids in allowed_terms must be strings, not ints
  * @type {string[]}
  */
 
-/**
- * terms for dev
- * var allowed_terms = ['3', '4'];
- */
+var allowed_terms = ['68'];  // canvas.dev --> ['4']
 
 /**
- * updated allowed terms with correct terms before deploying to prod
- */
-var allowed_terms = ['39'];
-
-var course_id_is_valid = (course_id > 0);
-var user_enrolled = false;
-var is_shopper = false;
-var is_teacher = false;
-var is_student = false;
-
-/**
- * check to see if the '#unauthorized_message' is being rendered  and only proceed
- * with additional checks to show shopping messages if authorized
+ * check to see if the '#unauthorized_message' is being rendered and only
+ * proceed with additional checks to show course selection messages if
+ * authorized
  * @type {boolean}
  */
 var authorized = $('#unauthorized_message').length > 0 ? false : true;
@@ -211,15 +192,15 @@ if (authorized){
     // user is unauthenticated
     $.getJSON(course_url, function( data ) {
       /*
-       Check to see the course is in the 'available' (Published) state before showing
-       the shopping button.
+       Check to see the course is in the 'available' (Published) state before
+       showing the course selection button.
        */
       var course_is_available = is_course_available(data['workflow_state']);
       var term_is_allowed = is_term_allowed(data['enrollment_term_id'], allowed_terms);
 
       if(course_is_available && !on_special_page && term_is_allowed) {
-        shopping_banner.append(no_user_canvas_login);
-        $('#breadcrumbs').after(shopping_banner);
+        course_selection_banner.append(no_user_canvas_login);
+        $('#breadcrumbs').after(course_selection_banner);
       }
     });
   }
@@ -234,44 +215,54 @@ if (authorized){
           var term_is_allowed = is_term_allowed(data['enrollment_term_id'], allowed_terms);
           var course_enrollments = data['enrollments'];
           var c_id = data['id'];
+          var sisCourseId = data['sis_course_id'];
 
           /*
-           Check to see the course is in the 'available' (Published) state before showing
-           the shopping button.
+           Check to see the course is in the 'available' (Published) state
+           before showing the course selection button.
            */
           if(course_is_available && !on_special_page && term_is_allowed && course_id == c_id) {
+            var user_has_course_enrollment = false;
+            var is_prospective_enrollee = false;
+            var is_teacher = false;
+            var is_enrolled_student = false;
             var num_enrollments = course_enrollments.length;
             for (var n = 0; n < num_enrollments; n++) {
-              var erole = course_enrollments[n]['role'];
-              var type =  course_enrollments[n]['type'];
-              user_enrolled = true;
-              is_shopper = (erole == 'Shopper');
-              is_student = (erole == 'StudentEnrollment') || (erole == 'Guest');
-              is_teacher =  (type == 'teacher' || type == 'ta' ||type == 'designer' );
+              var roleId = course_enrollments[n]['role'];
+              var roleType =  course_enrollments[n]['type'];
+              user_has_course_enrollment = true;
+              is_prospective_enrollee = (roleId == '38');  // '11' in dev
+              // is_enrolled_student represents guests and students (it does not
+              // include prospective enrollees)
+              is_enrolled_student = ['3', '90'].indexOf(roleId) > -1;  // ['3','9'] in dev
+              is_teacher = ['teacher', 'ta', 'designer'].indexOf(roleType) > -1;
             }
 
-            var add_shopper_url = shopping_tool_url + '/shop_course/' + course_and_user_id_param;
-            var remove_shopper_url = shopping_tool_url + '/remove_shopper_role/' + course_and_user_id_param;
-            if (user_enrolled) {
-              if (is_shopper) {
-                shopping_banner.append(shopping_get_shopper_banner_text(remove_shopper_url));
+            var baseMyHarvardUrl = 'https://portal.my.harvard.edu/psp/hrvihprd/EMPLOYEE/EMPL/h/';
+            var add_course_url = baseMyHarvardUrl + '?tab=HU_CLASS_SEARCH' +
+              '&SearchReqJSON={"SearchText":"' + sisCourseId + '"}' +
+              '&jsconfig={"OpenLightbox":true}';
+            var remove_course_url = baseMyHarvardUrl + '?tab=HU_SSS';
+            if (user_has_course_enrollment) {
+              if (is_prospective_enrollee) {
+                course_selection_banner.append(course_selection_get_prospective_enrollee_banner_text(remove_course_url));
               }
               else if (is_teacher) {
-                shopping_banner.append(shopping_get_teacher_banner_text());
+                course_selection_banner.append(course_selection_get_teacher_banner_text());
               }
-              else if(is_student){
-                shopping_banner.append(shopping_get_student_banner_text());
+              else if(is_enrolled_student){
+                course_selection_banner.append(course_selection_get_student_banner_text());
               }
-              if (is_shopper || is_teacher || is_student) {
-                $('#breadcrumbs').after(shopping_banner);
+              if (is_prospective_enrollee || is_teacher || is_enrolled_student) {
+                $('#breadcrumbs').after(course_selection_banner);
               }
             }else{
               /*
-               If logged in user is not enrolled, then display generic shopping
-               message to authorized user
+               If logged in user is not enrolled, then display generic course
+               selection message to authorized user
                */
-              shopping_banner.append(shopping_get_viewer_banner_text(add_shopper_url));
-              $('#breadcrumbs').after(shopping_banner);
+              course_selection_banner.append(course_selection_get_viewer_banner_text(add_course_url));
+              $('#breadcrumbs').after(course_selection_banner);
             }
           } else if (on_admin_page && term_is_allowed) {
             // on course admin page for course in a whitelisted term --> disable is_public_to_auth_users
