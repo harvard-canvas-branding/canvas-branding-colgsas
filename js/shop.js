@@ -94,18 +94,22 @@ function shopping_get_student_banner_text() {
 }
 
 /**
- * Get the banner text for shoppers/prospective enrollees
+ * Get the banner text for prospective enrollees (previously called shoppers)
  * @param remove_shopper_url
  * @returns {string} shopper_message_text
  */
 function shopping_get_shopper_banner_text(remove_shopper_url) {
-  var shopper_message_text = '<div class="shop-msg-left"><h1>This course has been added to your Crimson ' +
-    'Cart. ' + tooltip_link + '</h1><p>This means that you can receive notifications, join discussions, ' +
-    'watch lecture videos, and upload assignments during course selection period. Your contributions will be ' +
-    'visible to other students who are also participating in this course. You will be removed from this course ' +
-    'at the end of the course selection period unless you officially enroll through the Registrar’s office.' +
-    '</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + remove_shopper_url + '">Remove from Crimson Cart</a></div>';
+  var shopper_message_text = '<div class="shop-msg-left"><h1>This course has ' +
+    'been added to your Crimson Cart. ' + tooltip_link + '</h1>' +
+    '<p>This means that you can receive notifications, join discussions, ' +
+    'watch lecture videos, and upload assignments during course selection ' +
+    'period. Your contributions will be visible to other students who are ' +
+    'also participating in this course. You will be removed from this course ' +
+    'at the end of the course selection period unless you click on "enroll" ' +
+    'in my.harvard to be officially enrolled by the Registrar as a Student ' +
+    'in this course.</p></div><div class="shop-btn-right">' +
+    '<a class="btn btn-small btn-primary" href="' + remove_shopper_url + '">' +
+    'Remove from Crimson Cart</a></div>';
   return shopper_message_text;
 }
 
@@ -115,12 +119,15 @@ function shopping_get_shopper_banner_text(remove_shopper_url) {
  * @returns {string} viewer_message_text
  */
 function shopping_get_viewer_banner_text(add_shopper_url) {
-  var viewer_message_text = '<div class="shop-msg-left"><h1>Students: add this course to your Crimson Cart ' +
-    'in my.harvard' + tooltip_link + '</h1><p> to receive notifications, join discussions, watch lecture ' +
-    'videos, and upload assignments. There may be a short delay after you add the course to your cart. You ' +
-    'must enroll through the Registrar’s office to be officially enrolled as a Student in this course.' +
-    '</p></div><div class="shop-btn-right">' +
-    '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">Add to Crimson Cart</a></div>';
+  var viewer_message_text = '<div class="shop-msg-left"><h1>Students: add ' +
+    'this course to your Crimson Cart in my.harvard' + tooltip_link + '</h1>' +
+    '<p>You will be able to receive notifications, join discussions, watch ' +
+    'lecture videos, and upload assignments. There may be a short delay ' +
+    'after you add the course to your cart. You must click on "enroll" in ' +
+    'my.harvard to be officially enrolled by the Registrar as a Student in ' +
+    'this course.</p></div><div class="shop-btn-right">' +
+    '<a class="btn btn-small btn-primary" href="' + add_shopper_url + '">' +
+    'Add to Crimson Cart</a></div>';
   return viewer_message_text;
 }
 
