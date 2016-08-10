@@ -49,13 +49,13 @@
 		 */
 		function pollForElement(el, num_tries, timeout, success) {
 			var callback = function() {
-				var exists = $(el).length != 0;
+				var exists = $(el).length !== 0;
 				--num_tries;
 				if (exists) {
 					success($(el));
 				} else {
 					if (num_tries > 0) {
-						window.setTimeout(callback, timeout)
+						window.setTimeout(callback, timeout);
 					}
 				}
 			};
@@ -142,7 +142,7 @@
 		
 		//---------------------------------
 		// CHANGE: "Choose a Course Home Page" item
-		ListItems[4].text = ListItems[4].text.replace('The default is the course activity stream.', 'The default is the Syllabus Page with course description.')
+		ListItems[4].text = ListItems[4].text.replace('The default is the course activity stream.', 'The default is the Syllabus Page with course description.');
 		
 		//---------------------------------
 		// CHANGE: "Add TAs" item text and move up near the top of the list
