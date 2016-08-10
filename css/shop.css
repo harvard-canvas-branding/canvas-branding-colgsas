@@ -57,3 +57,7 @@
     float: right;
     margin: 1.5em auto;
 }
+
+.text-nowrap {
+    white-space: nowrap;
+}

@@ -9,11 +9,11 @@ var huCourseSelection = (function (){
   };
   // is_enrolled_student represents guests and students (it does not
   // include prospective enrollees)
-  var devEnrolledStudentRoles = ['3', '9'];
-  var enrolledStudentRolesByEnvironment = {
-    dev: devEnrolledStudentRoles,
-    qa: devEnrolledStudentRoles,
-    stage: devEnrolledStudentRoles,
+  var devEnrolledStudentRoleIds = ['3', '9'];
+  var enrolledStudentRoleIdsByEnvironment = {
+    dev: devEnrolledStudentRoleIds,
+    qa: devEnrolledStudentRoleIds,
+    stage: devEnrolledStudentRoleIds,
     prod: ['3', '90']
   };
   /**
@@ -32,7 +32,7 @@ var huCourseSelection = (function (){
 
   var courseSelectionToolUrl = 'https://icommons-tools.' + currentEnvironment + '.tlt.harvard.edu/course_selection/';
   var prospectiveEnrolleeRole = prospectiveEnrolleeRoleByEnvironment[currentEnvironment];
-  var enrolledStudentRole = enrolledStudentRolesByEnvironment[currentEnvironment];
+  var enrolledStudentRoleIds = enrolledStudentRoleIdsByEnvironment[currentEnvironment];
   var allowed_terms = allowedTermsByEnvironment[currentEnvironment];
 
   /**
@@ -84,6 +84,27 @@ var huCourseSelection = (function (){
     return '';
   }
 
+  var current_user_id = ENV['current_user_id'];
+  var user_url = '/api/v1/users/' + current_user_id + '/profile';
+  var course_id = get_course_id();
+  var course_url = '/api/v1/courses/' + course_id;
+  var login_url = window.location.origin+"/login";
+
+  /**
+   * Tool tip text and html link
+   * @type {string}
+   */
+  var course_selection_help_doc_url = 'https://wiki.harvard.edu/confluence/pages/viewpage.action?pageId=168134774';
+  var data_tooltip = 'More info about access during course selection period ' +
+    '(formerly Shopping Period)';
+  var tooltip_link = '<a data-tooltip title="' + data_tooltip + '" target="_blank" href="' +
+    course_selection_help_doc_url + '"><i class="icon-question"></i></a>';
+
+  var no_user_canvas_login = '<div class="tltmsg tltmsg-shop">' +
+    '<p class="participate-text">Students: <a href="'+login_url+'">login</a> ' +
+    'to get more access during course selection <span class="text-nowrap">' +
+    'period. ' + tooltip_link + '</span></p></div>';
+
   /**
    * Return the user id from the api data
    * @param canvas_user_api_data
@@ -124,9 +145,11 @@ var huCourseSelection = (function (){
    * @returns {string} student_message_text
    */
   function course_selection_get_student_banner_text() {
-    var student_message_text = '<h1>All Harvard ID holders can view this course site during the course ' +
-      'selection period. ' + tooltip_link + '</h1><p>Your contributions will be visible to other students who ' +
-      'are also participating in this course.</p>';
+    var student_message_text = '<h1>All Harvard ID holders can view this ' +
+      'course site during the course selection <span class="text-nowrap">' +
+      'period. ' + tooltip_link + '</span></h1><p>Your contributions will be ' +
+      'visible to other students who are also participating in this course.' +
+      '</p>';
     return student_message_text;
   }
 
@@ -136,17 +159,17 @@ var huCourseSelection = (function (){
    * @returns {string} prospective_enrollee_message_text
    */
   function course_selection_get_prospective_enrollee_banner_text(remove_course_url) {
-    var prospective_enrollee_message_text = '<div class="shop-msg-left"><h1>This course has ' +
-      'been added to your Crimson Cart. ' + tooltip_link + '</h1>' +
+    var prospective_enrollee_message_text = '<div class="shop-msg-left">' +
+      '<h1>This course is in your Crimson Cart in <span class="text-nowrap">' +
+      'my.harvard. ' + tooltip_link + '</span></h1>' +
       '<p>This means that you can receive notifications, join discussions, ' +
       'watch lecture videos, and upload assignments during course selection ' +
       'period. Your contributions will be visible to other students who are ' +
-      'also participating in this course. You will be removed from this course ' +
-      'at the end of the course selection period unless you click on "enroll" ' +
-      'in my.harvard to be officially enrolled by the Registrar as a Student ' +
-      'in this course.</p></div><div class="shop-btn-right">' +
+      'also participating in this course.</p><p>To enroll in this course, or ' +
+      'to remove it from your Crimson Cart, go to my.harvard.</p></div>' +
+      '<div class="shop-btn-right">' +
       '<a class="btn btn-small btn-primary" href="' + remove_course_url + '">' +
-      'Remove from Crimson Cart</a></div>';
+      'Go to my.harvard</a></div>';
     return prospective_enrollee_message_text;
   }
 
@@ -156,15 +179,16 @@ var huCourseSelection = (function (){
    * @returns {string} viewer_message_text
    */
   function course_selection_get_viewer_banner_text(add_course_url) {
-    var viewer_message_text = '<div class="shop-msg-left"><h1>Students: add ' +
-      'this course to your Crimson Cart in my.harvard' + tooltip_link + '</h1>' +
+    var viewer_message_text = '<div class="shop-msg-left"><h1>Students: ' +
+      'if you would like to participate in this course during course ' +
+      'selection period, add it to your Crimson Cart in ' +
+      '<span class="text-nowrap">my.harvard. ' + tooltip_link + '</span></h1>' +
       '<p>You will be able to receive notifications, join discussions, watch ' +
-      'lecture videos, and upload assignments. There may be a short delay ' +
-      'after you add the course to your cart. You must click on "enroll" in ' +
-      'my.harvard to be officially enrolled by the Registrar as a Student in ' +
-      'this course.</p></div><div class="shop-btn-right">' +
+      'lecture videos, and upload assignments. <i>There may be a short delay ' +
+      'after you add the course to your cart before you gain this additional ' +
+      'access.</p></div><div class="shop-btn-right">' +
       '<a class="btn btn-small btn-primary" href="' + add_course_url + '">' +
-      'Add to Crimson Cart</a></div>';
+      'Go to my.harvard</a></div>';
     return viewer_message_text;
   }
 
@@ -173,38 +197,21 @@ var huCourseSelection = (function (){
    * @returns {string} course_selection_is_active_message
    */
   function course_selection_get_teacher_banner_text() {
-    var course_selection_is_active_message = '<h1>Your current class list may include Prospective Enrollees. ' + tooltip_link +
-      '</h1><p>All Harvard ID holders can view this course site during course selection period. Students ' +
-      'can choose to add this course to their Crimson Cart to participate in discussions, upload assignments, watch ' +
-      'lecture videos, and receive notifications for this course before they are officially enrolled through the ' +
-      'Registrar. All Student contributions will be visible to other students who are also participating in this ' +
-      'course. At the end of the course selection period, Prospective Enrollees who have not officially enrolled as ' +
-      'Students or Guests in the course through the Registrar’s office will be removed from the class list.</p>';
+    var course_selection_is_active_message = '<h1>Your class list ' +
+      'may include <span class="text-nowrap">Prospective Enrollees. ' +
+      tooltip_link + '</span></h1><p>All Harvard ID holders can view this ' +
+      'course site during course selection period but cannot see student ' +
+      'contributions. Students may add this course to their Crimson Cart to ' +
+      'participate in discussions, upload assignments, watch ' +
+      'lecture videos, and receive notifications before they are officially ' +
+      'enrolled. All Student contributions will be visible to ' +
+      'other participants in this course.</p><br/>' +
+      '<p>At the end of course selection period, ' +
+      'Prospective Enrollees who have not officially enrolled as ' +
+      'Students or Guests in the course through the my.harvard ' +
+      'will be removed from the class list.</p>';
     return course_selection_is_active_message;
   }
-
-  /**
-   * Common course selection code
-   */
-
-  var current_user_id = ENV['current_user_id'];
-  var user_url = '/api/v1/users/' + current_user_id + '/profile';
-  var course_id = get_course_id();
-  var course_url = '/api/v1/courses/' + course_id;
-  var login_url = window.location.origin+"/login";
-
-  /**
-   * Tool tip text and html link
-   * @type {string}
-   */
-  var course_selection_help_doc_url = 'https://wiki.harvard.edu/confluence/pages/viewpage.action?pageId=168134774';
-  var data_tooltip = 'More info about access during course selection period';
-  var tooltip_link = '<a data-tooltip title="' + data_tooltip + '" target="_blank" href="' +
-    course_selection_help_doc_url + '"><i class="icon-question"></i></a>';
-
-  var no_user_canvas_login = '<div class="tltmsg tltmsg-shop"><p class="participate-text">Students: ' +
-    '<a href="'+login_url+'">login</a> to get more access during course selection period.' + tooltip_link + '</p></div>';
-
 
   /**
    * check to see if the '#unauthorized_message' is being rendered and only
@@ -261,7 +268,7 @@ var huCourseSelection = (function (){
                   var roleType =  course_enrollments[n]['type'];
                   user_has_course_enrollment = true;
                   is_prospective_enrollee = (roleId == prospectiveEnrolleeRole);
-                  is_enrolled_student = enrolledStudentRoles.indexOf(roleId) > -1;
+                  is_enrolled_student = enrolledStudentRoleIds.indexOf(roleId) > -1;
                   is_teacher = ['teacher', 'ta', 'designer'].indexOf(roleType) > -1;
                 }
 
