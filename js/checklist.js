@@ -1,4 +1,8 @@
 (function() {
+	// Hard-coded external tool IDs for account_id=39 (i.e. Harvard College/GSAS)
+	var POLICY_WIZARD_TOOL_ID = 1509;
+	var MANAGE_COURSE_TOOL_ID = 17079;
+		
 	// Ensure that these scripts only run on the appropriate pages
 	var is_course_page = ("/courses/" == window.location.pathname.substr(0, "/courses/".length));
 	if (is_course_page) {
@@ -9,7 +13,8 @@
 			require(['jquery'], modify_import_content_page);
 		}
 	}
-	
+
+
 	/**
 	 * This function adds some text about migrating content from iSites to the "Import Content" page.
 	 *
@@ -20,7 +25,9 @@
 	 function modify_import_content_page($) {
 		
 		// Holds the content that will be added to the page
-		var html = "<p>If you would like to incorporate content from a previous iSite, please contact the Academic Technology Group at <a href=\"mailto:atg@fas.harvard.edu\">atg@fas.harvard.edu</a>.</p>";
+		var BASE_COURSE_URL = window.location.pathname.replace("/content_migrations", "");
+		var url = BASE_COURSE_URL + "/external_tools/" + MANAGE_COURSE_TOOL_ID;
+		var html = '<p>If you would like to incorporate content from a previous iSite, click <a href="'+url+'">here</a>.</p>';
 
 		// Holds a function that when executed, will call its callback when the selector returns an element.
 		// The assumption is that the element may not exist in the DOM on the first try.
@@ -111,34 +118,42 @@
 		 * or if the external tools themselves are modified such that the IDs are no longer valid.
 		 * 
 		 */
-	
-		// Hard-coded external tool IDs
-		var POLICY_WIZARD_TOOL_ID = 1509; // Tool ID for account_id=39 
-		var MANAGE_PEOPLE_TOOL_ID = 3958; // Tool ID for account_id=39
-	
+
 		// Base course URL (i.e. /courses/1234)
 		var BASE_COURSE_URL = window.location.pathname;
-		var DEBUG = false; // (window.location.pathname == "/courses/39");
-	
-		//----- CHANGE #1 -----
-		// REMOVE: Modify "Import Content" item
-		ListItems[0].text = "If you've been using another course management system, you probably have stuff in there that you're going to want moved over to Canvas. We can walk you through the process of easily migrating your content into Canvas. If you would like to incorporate content from a previous iSite, please contact the Academic Technology Group at atg@fas.harvard.edu";
+
+		//---------------------------------
+		// CHANGE: "Import Content" item
+		ListItems[0].text = "If you've been using another course management system, you probably have stuff in there that you're going to want moved over to Canvas. We can walk you through the process of easily migrating your content into Canvas.";
 		
-		//----- CHANGE #2 -----
+		//---------------------------------
 		// REMOVE: "Add Students" item
 		ListItems.splice(2, 1);
 		
-		//----- CHANGE #3 -----
+		//---------------------------------
+		// CHANGE: "Add Files" item
+		// Remove the text that says "We'll show you how." When you click the button to go to the file upload page,
+		// nothing actually happens so removing this text will avoid any confusion.
+		ListItems[2].text = ListItems[2].text.replace("We'll show you how.", "");
+		
+		//---------------------------------
+		// CHANGE: "Select Navigation Links" item
+		ListItems[3].url += "#tab-navigation";
+		
+		//---------------------------------
+		// CHANGE: "Choose a Course Home Page" item
+		ListItems[4].text = ListItems[4].text.replace('The default is the course activity stream.', 'The default is the Syllabus Page with course description.')
+		
+		//---------------------------------
 		// CHANGE: "Add TAs" item text and move up near the top of the list
 		var add_tas = ListItems.splice(6, 1)[0];
 		ListItems.splice(1, 0, add_tas);
 		$.each(['text', 'title'], function(idx, prop) {
 			add_tas[prop] = add_tas[prop].replace(/TA(s)?/g, "TF$1");
 		});
-		add_tas.url = BASE_COURSE_URL + "/external_tools/" + MANAGE_PEOPLE_TOOL_ID;
-		
-	
-		//----- CHANGE #4 -----
+		add_tas.url = BASE_COURSE_URL + "/external_tools/" + MANAGE_COURSE_TOOL_ID;	
+
+		//---------------------------------
 		// INSERT: Academic Integrity Policy tool
 		ListItems.splice(7, 0, {
 			key:'policy_wizard',
@@ -148,10 +163,10 @@
 			url: BASE_COURSE_URL + "/external_tools/" + POLICY_WIZARD_TOOL_ID,
 			iconClass: 'icon-educators'
 		});
-		
+
 	
 		//----- DEBUG -----
-		if(DEBUG) {
+		if(false) {
 			$.getJSON("/api/v1/accounts/39/external_tools").done(function(data) {
 				console.log("List of tools for account_id 39:");
 				$.each(data, function(idx, tool) { 
