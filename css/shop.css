@@ -46,14 +46,18 @@
 }
 
 .shop-msg-left{
-	width: 80%;
-	top: 10%;
-	float: left;
+    width: 80%;
+    top: 10%;
+    float: left;
 }
 
 .shop-btn-right{
-	width: 20%;
-	top: 10%;
-	float: right;
-	margin: 1.5em auto;
+    width: 20%;
+    top: 10%;
+    float: right;
+    margin: 1.5em auto;
+}
+
+.text-nowrap {
+    white-space: nowrap;
 }
