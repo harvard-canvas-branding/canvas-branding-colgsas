@@ -1,10 +1,10 @@
 var huCourseSelection = (function (){
   var currentEnvironment='prod';
-  var devProspectiveEnrolleeRole = '11';
-  var prospectiveEnrolleeRoleByEnvironment = {
-    dev: devProspectiveEnrolleeRole,
-    qa: devProspectiveEnrolleeRole,
-    stage: devProspectiveEnrolleeRole,
+  var devProspectiveEnrolleeRoleId = '11';
+  var prospectiveEnrolleeRoleIdByEnvironment = {
+    dev: devProspectiveEnrolleeRoleId,
+    qa: devProspectiveEnrolleeRoleId,
+    stage: devProspectiveEnrolleeRoleId,
     prod: '38'
   };
   // is_enrolled_student represents guests and students (it does not
@@ -31,7 +31,7 @@ var huCourseSelection = (function (){
   };
 
   var courseSelectionToolUrl = 'https://icommons-tools.' + currentEnvironment + '.tlt.harvard.edu/course_selection/';
-  var prospectiveEnrolleeRole = prospectiveEnrolleeRoleByEnvironment[currentEnvironment];
+  var prospectiveEnrolleeRoleId = prospectiveEnrolleeRoleIdByEnvironment[currentEnvironment];
   var enrolledStudentRoleIds = enrolledStudentRoleIdsByEnvironment[currentEnvironment];
   var allowed_terms = allowedTermsByEnvironment[currentEnvironment];
 
@@ -267,7 +267,7 @@ var huCourseSelection = (function (){
                   var roleId = course_enrollments[n]['role_id'];
                   var roleType =  course_enrollments[n]['type'];
                   user_has_course_enrollment = true;
-                  is_prospective_enrollee = (roleId == prospectiveEnrolleeRole);
+                  is_prospective_enrollee = (roleId == prospectiveEnrolleeRoleId);
                   is_enrolled_student = enrolledStudentRoleIds.indexOf(roleId) > -1;
                   is_teacher = ['teacher', 'ta', 'designer'].indexOf(roleType) > -1;
                 }
