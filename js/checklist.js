@@ -27,7 +27,7 @@
 		// Holds the content that will be added to the page
 		var BASE_COURSE_URL = window.location.pathname.replace("/content_migrations", "");
 		var url = BASE_COURSE_URL + "/external_tools/" + MANAGE_COURSE_TOOL_ID;
-		var html = '<p>If you would like to incorporate content from a previous iSite, click <a href="'+url+'">here</a>.</p>';
+		var html = '<p>If you would like to incorporate content from a previous iSite, click <a href="'+url+'" title="Import iSites Content">here</a>.</p>';
 
 		// Holds a function that when executed, will call its callback when the selector returns an element.
 		// The assumption is that the element may not exist in the DOM on the first try.
