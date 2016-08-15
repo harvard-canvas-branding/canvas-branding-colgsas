@@ -20,8 +20,6 @@
     text-align: left;
 }
 
-#course-shopping p.participate-text{ font-size: 16px; }
-
 .tltmsg{
     display: inline-block;
     width: 92%;
@@ -29,16 +27,6 @@
     border: solid 1px #ecebeb;
     margin: 0.5em 2%;
     padding: 0.5em 2%;
-}
-
-.tltmsg-shop{
-    background: #f2f2f2;
-    border: solid 1px #d0d0d0;
-    font-size: 16px;
-}
-
-.tltmsg-shop em{
-    font-size: 12px;
 }
 
 .selection-disabled{
