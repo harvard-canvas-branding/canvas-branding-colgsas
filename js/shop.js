@@ -100,9 +100,8 @@ var huCourseSelection = (function (){
   var tooltip_link = '<a data-tooltip title="' + data_tooltip + '" target="_blank" href="' +
     course_selection_help_doc_url + '"><i class="icon-question"></i></a>';
 
-  var no_user_canvas_login = '<div class="tltmsg">' +
-    '<h1>Students: <a href="'+login_url+'">login</a> ' +
-    'to get more access during course selection <span class="text-nowrap">' +
+  var no_user_canvas_login = '<h1>Students: <a href="'+login_url+'">login</a>' +
+    ' to get more access during course selection <span class="text-nowrap">' +
     'period. ' + tooltip_link + '</span></h1></div>';
 
   /**
