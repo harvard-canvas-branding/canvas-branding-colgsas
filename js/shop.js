@@ -191,7 +191,7 @@ var huCourseSelection = (function (){
       '<p>You will be able to receive notifications, join discussions, watch ' +
       'lecture videos, and upload assignments. <i>There may be a short delay ' +
       'after you add the course to your cart before you gain this additional ' +
-      'access.</p></div><div class="shop-btn-right">' +
+      'access.</i></p></div><div class="shop-btn-right">' +
       '<a class="btn btn-small btn-primary" href="' + add_course_url + '">' +
       'Go to my.harvard</a></div>';
     return viewer_message_text;
