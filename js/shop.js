@@ -1,5 +1,11 @@
 var huCourseSelection = (function (){
   var currentEnvironment='prod';
+  var courseSelectionToolSubdomainByEnvironment = {
+    dev: '.dev',
+    qa: '.qa',
+    stage: '.stage',
+    prod: ''
+  };
   var devProspectiveEnrolleeRoleId = '11';
   var prospectiveEnrolleeRoleIdByEnvironment = {
     dev: devProspectiveEnrolleeRoleId,
@@ -30,7 +36,7 @@ var huCourseSelection = (function (){
     prod: ['68']
   };
 
-  var courseSelectionToolUrl = 'https://icommons-tools.' + currentEnvironment + '.tlt.harvard.edu/course_selection/';
+  var courseSelectionToolUrl = 'https://icommons-tools' + courseSelectionToolSubdomainByEnvironment[currentEnvironment] + '.tlt.harvard.edu/course_selection/';
   var prospectiveEnrolleeRoleId = prospectiveEnrolleeRoleIdByEnvironment[currentEnvironment];
   var enrolledStudentRoleIds = enrolledStudentRoleIdsByEnvironment[currentEnvironment];
   var allowed_terms = allowedTermsByEnvironment[currentEnvironment];
