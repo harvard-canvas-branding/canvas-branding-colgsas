@@ -213,7 +213,7 @@ var huCourseSelection = (function (){
       'other participants in this course.</p><br/>' +
       '<p>At the end of course selection period, ' +
       'Prospective Enrollees who have not officially enrolled as ' +
-      'Students or Guests in the course through the my.harvard ' +
+      'Students or Guests in the course through my.harvard ' +
       'will be removed from the class list.</p>';
     return course_selection_is_active_message;
   }
