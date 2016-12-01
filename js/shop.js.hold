@@ -307,7 +307,8 @@ var huCourseSelection = (function (){
                 var $courseVisibility = $('#course_course_visibility');
                 var notificationText = '<p><em>Please contact your local academic support staff if you would like to choose the "Course" visibility option during course selection period.</em></p>';
                 $courseVisibility.closest('span').after(notificationText);
-                $courseVisibility.children('option[value="course"]').attr('disabled', true);              }
+                $courseVisibility.children('option[value="course"]').attr('disabled', true);
+              }
             });
           }
         });
