@@ -304,10 +304,10 @@ var huCourseSelection = (function (){
                 }
               } else if (on_admin_page && term_is_allowed) {
                 // on course admin page for course in a whitelisted term --> disable is_public_to_auth_users
-                var $iptau_checkbox = $('#course_is_public_to_auth_users');
-                $iptau_checkbox.closest("div").addClass("selection-disabled");
-                $iptau_checkbox.closest("span").after('<span> <em>(this cannot be changed during course selection period)</em></span>');
-                $iptau_checkbox.attr("disabled", true);
+                var $courseVisibility = $('#course_course_visibility');
+                var notificationText = '<p><em>Please contact your local academic support staff if you would like to choose the "Course" visibility option during course selection period.</em></p>';
+                $courseVisibility.closest('span').after(notificationText);
+                $courseVisibility.children('option[value="course"]').attr('disabled', true);
               }
             });
           }
