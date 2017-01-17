@@ -33,7 +33,7 @@ var huCourseSelection = (function (){
     dev: devAllowedTerms,
     qa: devAllowedTerms,
     stage: devAllowedTerms,
-    prod: ['68']
+    prod: ['83', '84', '85']
   };
 
   var courseSelectionToolUrl = 'https://icommons-tools' + courseSelectionToolSubdomainByEnvironment[currentEnvironment] + '.tlt.harvard.edu/course_selection/';
