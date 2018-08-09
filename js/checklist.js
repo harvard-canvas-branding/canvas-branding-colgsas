@@ -1,6 +1,6 @@
 (function() {
 	// Hard-coded external tool IDs for account_id=39 (i.e. Harvard College/GSAS)
-	var POLICY_WIZARD_TOOL_ID = 1509;
+	var POLICY_WIZARD_TOOL_ID = 33928;
 	var MANAGE_COURSE_TOOL_ID = 17079;
 		
 	// Ensure that these scripts only run on the appropriate pages
