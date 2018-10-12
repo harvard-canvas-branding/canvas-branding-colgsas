@@ -19,7 +19,11 @@
   };
 
   ctrl.getCancelBtn = function () {
-    return document.querySelector("#edit_course_syllabus_form .cancel_button");
+    return document.querySelector("#edit_course_syllabus_form .form-actions .cancel_button");
+  };
+
+  ctrl.getUpdateBtn = function() {
+    return document.querySelector("#edit_course_syllabus_form .form-actions button[type=submit]");
   };
 
   ctrl.getMsgBox = function () {
@@ -64,6 +68,7 @@
 
   ctrl.addListeners = function () {
     ctrl.getEditBtn().addEventListener("click", ctrl.onEdit);
+    ctrl.getUpdateBtn().addEventListener("click", ctrl.onUpdate);
     ctrl.getCancelBtn().addEventListener("click", ctrl.onCancel);
   };
 
@@ -83,6 +88,14 @@
   };
 
   ctrl.onCancel = function () {
+    ctrl.hideBox();
+  };
+
+  ctrl.onUpdate = function() {
+    ctrl.hideBox();
+  };
+
+  ctrl.hideBox = function() {
     var box = ctrl.getMsgBox();
     box.style.display = "none";
   };
