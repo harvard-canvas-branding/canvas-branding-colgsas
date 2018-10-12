@@ -6,7 +6,9 @@
   var ctrl = {};
 
   ctrl.init = function () {
-    var is_on_syllabus_page = ((window.location.pathname).indexOf("syllabus") != -1);
+    var has_syllabus_url_path = ((window.location.pathname).indexOf("syllabus") != -1);
+    var has_course_syllabus_element = document.getElementById("course_syllabus");
+    var is_on_syllabus_page = has_syllabus_url_path || has_course_syllabus_element;
     var can_edit_syllabus = ctrl.getEditBtn() !== null;
 
     if (is_on_syllabus_page && can_edit_syllabus) {
