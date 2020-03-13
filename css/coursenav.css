@@ -1,0 +1,6 @@
+/* 
+Per request from FAS Service Team 3/13/20, hiding Web Conferences in course navigation. 
+*/
+#left-side nav .section > a.conferences {
+    display: none;
+}
