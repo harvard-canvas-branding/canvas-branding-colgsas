@@ -1,6 +1,12 @@
 /* 
-Per request from FAS Service Team 3/13/20, hiding Web Conferences in course navigation. 
+Per request from FAS Service Team 3/13/20, hiding Web Conferences from the course navigation.
 */
 #left-side nav .section > a.conferences {
+    display: none;
+}
+/*
+Note: In order to hide the mobile nav item, custom JS is used to add the expected class to the DOM.
+*/
+#mobileContextNavContainer .conferences-mobile-item {
     display: none;
 }
