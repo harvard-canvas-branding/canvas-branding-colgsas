@@ -9,58 +9,6 @@
 		if(window.ENV.COURSE_WIZARD) {
 			require(['jquery', 'jsx/course_wizard/ListItems'], modify_setup_checklist);
 		}
-		if (/^\/courses\/\d+\/content_migrations/.test(window.location.pathname)) {
-			require(['jquery'], modify_import_content_page);
-		}
-	}
-
-
-	/**
-	 * This function adds some text about migrating content from iSites to the "Import Content" page.
-	 *
-	 * Due to the fact that the "Import Content" form is dynamically generated at page render time,
-	 * there is some extra complexity in the code to poll for the existence of the DOM element
-	 * before trying to add the text. Otherwise, this could be simplified to a single jquery call.
-	 */
-	 function modify_import_content_page($) {
-		
-		// Holds the content that will be added to the page
-		var BASE_COURSE_URL = window.location.pathname.replace("/content_migrations", "");
-		var url = BASE_COURSE_URL + "/external_tools/" + MANAGE_COURSE_TOOL_ID;
-		var html = '<p>If you would like to incorporate content from a previous iSite, click <a href="'+url+'" title="Import iSites Content">here</a>.</p>';
-
-		// Holds a function that when executed, will call its callback when the selector returns an element.
-		// The assumption is that the element may not exist in the DOM on the first try.
-		var poll_for_element = pollForElement("#migrationConverterContainer > h1", 20, 100, function($el) {
-			$el.after(html);
-		});
-
-		poll_for_element();
-
-		/**
-		 * Poll the DOM for the existence of an element and then execute
-		 * the "success" callback when/if the element is found to exist.
-		 *
-		 * @param {(string|jQuery)} el the element to find
-		 * @param {integer} num_tries the number of times to test for existence
-		 * @param {integer} timeout the interval between tries
-		 * @param {function} success the callback to execute when/if the el is found
-		 * @returns {function} a function that will initiate the polling process
-		 */
-		function pollForElement(el, num_tries, timeout, success) {
-			var callback = function() {
-				var exists = $(el).length !== 0;
-				--num_tries;
-				if (exists) {
-					success($(el));
-				} else {
-					if (num_tries > 0) {
-						window.setTimeout(callback, timeout);
-					}
-				}
-			};
-			return callback;
-		}
 	}
 	
 	/**
