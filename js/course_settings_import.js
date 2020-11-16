@@ -27,8 +27,13 @@
 
     function update_selective_import_value() {
         var radio = document.querySelector("#migrationConverterContainer input[type=radio][name=selective_import][value=true]");
-        if(radio) {
+        if(!radio) {
+            return;
+        }
+        if(!radio.dataset.initialized) {
+            radio.dataset.initialized = "yes";
             radio.checked = true;
+            radio.click(); // simulating a click because the form validator doesn't recognize it as checked
         }
     }
 
