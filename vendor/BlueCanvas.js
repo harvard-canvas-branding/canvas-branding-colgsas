@@ -303,7 +303,7 @@ var BLUE_CANVAS = {
         });
     },
 
-    ShowLoginPopUp: function () {
+    ShowLoginPopUp: function (isGradeBlock) {
         //BLUE_CANVAS.ShowLoader();
         var url;
         var Nopopupagain = false;
@@ -340,7 +340,7 @@ var BLUE_CANVAS = {
                     else {
                         if (result.Tasks != null) { taskList = result.Tasks; }
                     }
-                    BLUE_CANVAS.ShowPendingTaskPopUp(taskList, Nopopupagain);
+                    BLUE_CANVAS.ShowPendingTaskPopUp(taskList, Nopopupagain, isGradeBlock);
                 }
                 //BLUE_CANVAS.HideLoader();
             },
@@ -353,7 +353,7 @@ var BLUE_CANVAS = {
         });
     },
 
-    ShowPendingTaskPopUp: function (blueTaskList, noPopupAgain) {
+    ShowPendingTaskPopUp: function (blueTaskList, noPopupAgain, isGradeBlock) {
         var seriousTasks = [];
         var adminSetting = BLUE_CANVAS.GetAdminsettingFromLocal();
 
@@ -397,7 +397,7 @@ var BLUE_CANVAS = {
                                     otherTaskAdded = true;
                                     courseList.PopUpList.push({ CourseName: adminSetting.OtherCourseLabel, DueDate: minDate.toLocaleDateString(BLUE_CANVAS.localConstant.LANGUAGE, BLUE_CANVAS.localConstant.DATE_FORMAT), Link: '', CourseID: '0' });
                                 }
-                                if (value.TaskType != 'FO') { hasQPSVM = true;}
+                                if (value.TaskType != 'FO') { hasQPSVM = true; }
                             }
                         });
 
@@ -405,7 +405,7 @@ var BLUE_CANVAS = {
                             var content = '';
                             content += '<table style="font-size:13px;width:100%" role="presentation">';
                             for (var i = 0; i < courseList.PopUpList.length; i++) {
-                                content += '<tr><td>' + '<a style="cursor:pointer;color:#1c70ed;text-decoration:underline;" href="#" title=' + courseList.PopUpList[i].CourseName + ' onclick="BLUE_CANVAS.PopUpCourseClick(' + courseList.PopUpList[i].CourseID + ');" >' + courseList.PopUpList[i].CourseName + '</a></td><td align="right" > ' + adminSetting.DueLabel + ' ' + courseList.PopUpList[i].DueDate + '</td></tr>';
+                                content += '<tr style="height: 40px; border-bottom: 1px solid lightGray;"><td>' + '<a style="cursor:pointer;color:#1c70ed;text-decoration:underline;" href="#" title=' + courseList.PopUpList[i].CourseName + ' onclick="BLUE_CANVAS.PopUpCourseClick(' + courseList.PopUpList[i].CourseID + ');" >' + courseList.PopUpList[i].CourseName + '</a></td><td align="right" > ' + adminSetting.DueLabel + ' ' + courseList.PopUpList[i].DueDate + '</td></tr>';
                             }
                             content += '</table>';
 
@@ -419,12 +419,12 @@ var BLUE_CANVAS = {
 
                             footerBtn += '</div>';
                             footerBtn += '<div style="text-align:right;padding:10px;">';
-                            footerBtn += '<input type="button" value="' + adminSetting.LoginPrompt.ButtonText + '" title="' + adminSetting.LoginPrompt.ButtonText + '" class="btn btn-primary" style="white-space: normal;  margin-top: 10px;"  onclick="BLUE_CANVAS.BtnPendingPopUpClick(\'dvOuter\');"  id="btnPendingOk"  />';
+                            footerBtn += '<input type="button" value="' + adminSetting.LoginPrompt.ButtonText + '" title="' + adminSetting.LoginPrompt.ButtonText + '" class="btn btn-primary" style="white-space: normal;  margin-top: 10px; font-size: 12px; padding: 4px 6px;"  onclick="BLUE_CANVAS.BtnPendingPopUpClick(\'dvOuter\');"  id="btnPendingOk"  />';
                             footerBtn += '</div>';
 
-                            var htmlString = BLUE_CANVAS.CommonPopUp("dvInner_SeriousTask", adminSetting.LogoUrl, (hasQPSVM ? adminSetting.LoginPrompt.QPSVMHeaderText: adminSetting.LoginPrompt.FOHeaderText), footerBtn, content);
+                            var htmlString = BLUE_CANVAS.CommonPopUp("dvInner_SeriousTask", adminSetting.LogoUrl, (hasQPSVM ? adminSetting.LoginPrompt.QPSVMHeaderText : adminSetting.LoginPrompt.FOHeaderText), footerBtn, content);
 
-                            if (adminSetting.LoginPrompt.Enabled) {
+                            if (adminSetting.LoginPrompt.Enabled && (isGradeBlock == null || isGradeBlock == false)) {
                                 if ((noPopupAgain == undefined || noPopupAgain == null || noPopupAgain == "") || (noPopupAgain != null && noPopupAgain != true && noPopupAgain != "true")) {
                                     $("body").append(htmlString);  /*Todo: In case of no value of NoPopUpAgain,we have to show tasks*/
                                     BLUE_CANVAS.SetfocusOnPopup();
@@ -433,10 +433,10 @@ var BLUE_CANVAS = {
 
                             footerBtn = '';
                             if (adminSetting.BlockingPrompt.BlockingOption == "GB") {
-                                footerBtn += '<input type="button" tabindex="0" class="btn btn-primary" style="white-space: normal; margin-top: 10px;" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');" value="' + adminSetting.BlockingPrompt.ButtonText + '" title="' + adminSetting.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
+                                footerBtn += '<input type="button" tabindex="0" class="btn btn-primary" style="white-space: normal; margin-top: 10px; font-size: 12px; padding: 4px 6px;" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');" value="' + adminSetting.BlockingPrompt.ButtonText + '" title="' + adminSetting.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
                             }
                             else {
-                                footerBtn += '<input type="button" tabindex="0" class="btn btn-primary" style="white-space: normal; margin-top: 10px;" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\');" value="' + adminSetting.BlockingPrompt.ButtonText + '" title="' + adminSetting.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
+                                footerBtn += '<input type="button" tabindex="0" class="btn btn-primary" style="white-space: normal; margin-top: 10px; font-size: 12px; padding: 4px 6px;" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\');" value="' + adminSetting.BlockingPrompt.ButtonText + '" title="' + adminSetting.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
                             }
 
                             var htmlStringGradePopUp = BLUE_CANVAS.CommonPopUp("dvInner_SeriousTask", adminSetting.LogoUrl, adminSetting.BlockingPrompt.HeaderText, footerBtn, content);
@@ -662,7 +662,7 @@ var BLUE_CANVAS = {
     },
 
     RedirectToDashBoard: function () {
-        window.location.href = BLUE_CANVAS_SETUP.canvasAPI;
+        setTimeout("window.location.href = BLUE_CANVAS_SETUP.canvasAPI;", 100);
     },
 
     PopUpCourseClick: function (currentCourseId) {
@@ -807,18 +807,26 @@ $(function () {
     if (ENV.current_user_roles != null && ENV.current_user_roles.length > 0) {
         /*Landing page popup*/
         if (urlSplitResult.length == 4 && (urlSplitResult[3] == '' || urlSplitResult[3] == '#' || urlSplitResult[3].indexOf('login_success') > 0)) {
+            var adminSettings;
             if (localStorage.getItem(BLUE_CANVAS.localConstant.IS_USER_LOGEDIN) == null || localStorage.getItem(BLUE_CANVAS.localConstant.IS_USER_LOGEDIN) == undefined) {
                 BLUE_CANVAS.GetBlueAdminSetting(BLUE_CANVAS_SETUP.domainName);
                 localStorage.setItem(BLUE_CANVAS.localConstant.IS_USER_LOGEDIN, true);
             }
-            var adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
+            else {
+                adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
+                if (adminSettings != null && adminSettings.BlockingPrompt != null && adminSettings.BlockingPrompt.BlockingOption != "NONE") {
+                    localStorage.removeItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP);
+                    BLUE_CANVAS.ShowLoginPopUp(true);/*This is to enable/disable grade block on home page*/
+                }
+            }
+            adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
             if (adminSettings != null && adminSettings.BlockingPrompt != null && adminSettings.BlockingPrompt.BlockingOption != "NONE") {
                 $("#right-side-wrapper").on("click", "a[href='/grades']", function (e) {
-                    var htmlStringPop = localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP);
-                    if (htmlStringPop != undefined && htmlStringPop != null && htmlStringPop != "") {
+                    var htmlStringGradePopUp = localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP);
+                    if (htmlStringGradePopUp != undefined && htmlStringGradePopUp != null && htmlStringGradePopUp != "") {
                         this.href = "javascript:void(0)";
-                        this.onclick = function () { $("body").append(htmlStringPop); BLUE_CANVAS.SetfocusOnPopup(); };
-                        $("body").append(htmlStringPop);
+                        this.onclick = function () { $("body").append(htmlStringGradePopUp); BLUE_CANVAS.SetfocusOnPopup(); };
+                        $("body").append(htmlStringGradePopUp);
                         BLUE_CANVAS.SetfocusOnPopup();
                     }
                 });
