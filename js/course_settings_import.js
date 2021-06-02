@@ -19,8 +19,7 @@
                 '<span class="screenreader-only">alert</span>' +
             '</div>' +
             '<div style="width:100%;padding:.5em;">' +
-                '<b>Attention Spring 2020 Courses:&nbsp;</b>' +
-                'Use "Select specific content" to exclude Calendar Events when copying from previous courses. Events will include old Zoom links that will not work in your new course. <a href="https://harvard.service-now.com/ithelp?id=kb_article&sys_id=8b1898dcdba0a810babda8dad39619bd" target="_blank">Learn how to exclude these items</a> when importing your course content.' +
+                '<b>Attention:</b> Use "Select specific content" to exclude Calendar Events when copying from previous courses. Events will include old Zoom links that will not work in your new course. <a href="https://harvard.service-now.com/ithelp?id=kb_article&sys_id=8b1898dcdba0a810babda8dad39619bd">Learn how to exclude these items</a> when importing your course content.' +
             '</div>';
         content.insertBefore(notification, content.firstChild);
     }
