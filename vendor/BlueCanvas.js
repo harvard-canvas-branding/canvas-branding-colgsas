@@ -1,6 +1,7 @@
 ﻿/*v2.0.1.20170605-809*/
 var BLUE_CANVAS = {
     eventAdded: false,
+    isOnlyGradeBlock: false,
 
     localConstant: {
         COURSE_DETAIL: "DASHBOARD_COURSES",
@@ -15,7 +16,8 @@ var BLUE_CANVAS = {
         BLUE_SERIOUS_TASKS_LOGINPOPUP: "BLUE_SERIOUS_TASKS_LOGINPOPUP",
         SERIOUS_TASKS_UNIQUE_COURSEIDS: "SERIOUS_TASKS_UNIQUE_COURSEIDS",
         LANGUAGE: ENV.BIGEASY_LOCALE.toLowerCase().replace("_", "-"),
-        DATE_FORMAT: { year: 'numeric', month: 'long', day: 'numeric' }
+        DATE_FORMAT: { year: 'numeric', month: 'long', day: 'numeric' },
+        BLOCKING_OPTION: "BLOCKING_OPTION"
     },
 
     AddEventToCalenderAgenda: function () {
@@ -164,14 +166,29 @@ var BLUE_CANVAS = {
 
     SetfocusOnPopup: function () {
         window.setTimeout("$('#bluePopupHeading').focus();", 500);
+        $("#bluePopupHeading").keydown(function (evt) {
+            evt = evt || window.event;
+            if (evt.keyCode === 9 && evt.shiftKey) {
+                $('#btnClosePrompt')[0].focus();
+                return false;
+            }
+        });
+        $("#btnClosePrompt").keydown(function (evt) {
+            evt = evt || window.event;
+            if (evt.keyCode === 9 && !evt.shiftKey) {
+                $('#bluePopupHeading')[0].focus();
+                return false;
+            }
+        });
     },
-    FilterPendingTask: function (blueTaskList, isLogin, includeUserLevelTask) {
+
+    FilterPendingTask: function (blueTaskList, isLogin, includeUserLevelTask, courseId) {
 
         var seriousTaskList = [];
 
         if (blueTaskList != null && blueTaskList.length > 0) {
 
-            seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, BLUE_CANVAS.localConstant.LANGUAGE, isLogin, includeUserLevelTask);
+            seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, BLUE_CANVAS.localConstant.LANGUAGE, isLogin, includeUserLevelTask, courseId);
 
             if (seriousTaskList == null || seriousTaskList.length == 0) {
                 var matchLanguage = $.map(blueTaskList, function (obj, i) {
@@ -181,24 +198,24 @@ var BLUE_CANVAS = {
                 });
 
                 if (matchLanguage != null && matchLanguage.length > 0) {
-                    seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, matchLanguage[0], isLogin, includeUserLevelTask);
+                    seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, matchLanguage[0], isLogin, includeUserLevelTask, courseId);
                 }
             }
 
             if (seriousTaskList != null && seriousTaskList.length == 0) {
-                seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, BLUE_CANVAS_SETUP.defaultLanguage, isLogin, includeUserLevelTask);
+                seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, BLUE_CANVAS_SETUP.defaultLanguage, isLogin, includeUserLevelTask, courseId);
             }
 
             if (seriousTaskList != null && seriousTaskList.length == 0) {
                 var firstTaskLanguage = blueTaskList[0].Language.toLowerCase()
 
-                seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, firstTaskLanguage, isLogin, includeUserLevelTask);
+                seriousTaskList = BLUE_CANVAS.FilterBlockableTask(blueTaskList, firstTaskLanguage, isLogin, includeUserLevelTask, courseId);
             }
         }
         return seriousTaskList;
     },
 
-    FilterBlockableTask: function (blueTaskList, taskLanguage, isLogin, includeUserLevelTask) {
+    FilterBlockableTask: function (blueTaskList, taskLanguage, isLogin, includeUserLevelTask, courseId) {
         var adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
         if (isLogin) {
             var currentDate = new Date();
@@ -208,9 +225,25 @@ var BLUE_CANVAS = {
             });
         }
         else {
-            return $.grep(blueTaskList, function (element, index) {
-                return ((element.Blockable == "true" || element.Blockable == true) && (element.StartDate <= adminSettings.StartDate) && (element.DueDate >= adminSettings.DueDate) && (element.Language.toLowerCase() == taskLanguage) && ($.inArray(element.TaskType, adminSettings.BlockingTaskType) !== -1));
-            });
+            if (adminSettings != null && adminSettings.ProjectSettings != null && adminSettings.ProjectSettings.length > 0) {
+                /*User Project Specific settings*/
+                //var mergeTaskList = adminSettings.ProjectSettings.map(item => {
+                //    const obj = blueTaskList.find(o => o.ProjectId === item.ProjectId); return { ...item, ...obj };
+                //});
+                var mergeTaskList = blueTaskList.map(x => Object.assign(x, adminSettings.ProjectSettings.find(y => y.ProjectId === x.ProjectId)));
+                return $.grep(mergeTaskList, function (element, index) {
+                    return (((element.BlockingOption == 4) ||
+                        ((element.Blockable == "true" || element.Blockable == true) && (element.BlockingOption == 2 || element.BlockingOption == 3) && element.CourseID == courseId))
+                        && (element.StartDate <= element.ProjectStartDate) && (element.DueDate >= element.ProjectDueDate)
+                        && (element.Language.toLowerCase() == taskLanguage)
+                        && ($.inArray(element.TaskType, adminSettings.BlockingTaskType) !== -1));
+                });
+            }
+            else {
+                return $.grep(blueTaskList, function (element, index) {
+                    return ((element.Blockable == "true" || element.Blockable == true) && (element.StartDate <= adminSettings.StartDate) && (element.DueDate >= adminSettings.DueDate) && (element.Language.toLowerCase() == taskLanguage) && ($.inArray(element.TaskType, adminSettings.BlockingTaskType) !== -1));
+                });
+            }
         }
     },
 
@@ -219,28 +252,31 @@ var BLUE_CANVAS = {
 
         popUpStr += '<style>label {-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}';
         popUpStr += 'input[type=checkbox].css-checkbox {position: absolute; opacity:0;}';
-        popUpStr += 'input[type=checkbox].css-checkbox + label.css-label {padding-left:25px;height:18px; display:inline-block;line-height:18px;background-repeat:no-repeat;background-position: 0 0;cursor:pointer;}';
+        popUpStr += 'input[type=checkbox].css-checkbox + label.css-label {padding-left:25px;height:18px; display:inline-block;line-height:18px;background-repeat:no-repeat;background-position: 0 0;cursor:pointer;font-size:12px;font-weight:bold;}';
         popUpStr += 'input[type=checkbox].css-checkbox:checked + label.css-label {background-position: 0 -18px;}';
         popUpStr += '.css-label{background-image:url(' + BLUE_CANVAS_SETUP.connectorUrl + '/Content/check.png);}';
         popUpStr += 'input[type=checkbox].css-checkbox:focus + label.css-label {border: 1px dotted black;}';
         popUpStr += '.lite-green-check{background-image:url(' + BLUE_CANVAS_SETUP.connectorUrl + '/Content/check.png);}';
-        popUpStr += 'div[id^="dvInner_"]{left:auto !important; margin:auto;}';
-        popUpStr += '@media only screen and (max-width:700px){div[id^="dvInner_"]{top: 10% !important;}} @media only screen and (max-width:600px){div[id^="dvInner_"]{width:340px !important;margin-left:10px;} }</style>';
+        popUpStr += 'div[id^="dvInner_"]{left:auto !important; margin:auto; max-width:720px;}';
+        popUpStr += '@media only screen and (max-width:600px){div[id^="dvInner_"]{width:80% !important;margin:auto;top: 10% !important;} }';
+        popUpStr += '.exp-grid-container {display: grid;grid-template-columns: auto;border-top: 1px solid #E9E9E9;}';
+        popUpStr += '.exp-grid-container a {text-decoration: none;cursor: pointer;}';
+        popUpStr += '.exp-grid {display: grid;grid-template-columns: auto 20px;border-bottom: 1px solid #E9E9E9;align-items: center;padding: 12px 16px 12px 16px;grid-column-gap: 20px;}';
+        popUpStr += '.exp-grid .col1 {grid-column: 1 / 2;color: #0C5AC5;text-decoration: none;line-height: 17px;}';
+        popUpStr += '.exp-grid .col1-data {color: #041723;line-height: 17px;padding-top:4px;font-weight: normal;} .exp-grid .col2 {grid-column: 2 / 2;}</style>';
 
         if (logoImg == null || logoImg == "") {
             logoImg = BLUE_CANVAS_SETUP.connectorUrl + "/Content/explorance-university.png";
         }
 
         popUpStr += '<div id="dvOuter" style="position: fixed; top: 0; left: 0; background: rgba(0,0,0,0.6); z-index: 1000; width: 100%; height: 100%;" role="dialog">';
-        popUpStr += '<div id=' + innerDivId + ' style="position: relative; top: 25%; left: 30%; height: auto; width:auto; max-width: 450px; z-index: 10; background: #fff; border-top: 3px solid rgb(66, 139, 202); box-shadow: 0px 2px 6px rgba(0,0,0,1);" role="document" aria-live="assertive">';
-        popUpStr += '<div style="padding: 0.5%; padding-bottom: 4%;">';
-        popUpStr += '<div style="text-align: center; box-shadow: lightGray 0px 1px; "><img style="height:75px" alt="Institution Logo Image" src=' + logoImg + ' /></div>';
-        popUpStr += '<h4 id="bluePopupHeading" style="padding: 10px;color: #474644;font-size:13px; box-shadow: lightGray 0px 1px; text-align: center;" tabindex="0"><strong>' + headerTxt + '</strong></h4>';
-        popUpStr += '<div style="padding-left:10px;padding-right:10px;max-height: 150px;overflow-y: auto; overflow-x: hidden;">';
+        popUpStr += '<div id=' + innerDivId + ' style="position: relative; top: 10%; left: 30%; height: auto; width:auto; z-index: 10; background: #fff; border: 1px solid #E9E9E9;border-radius: 8px;font-size:14px;font-weight:bold;" role="document" aria-live="assertive">';
+        popUpStr += '<div>';
+        popUpStr += '<div style="text-align: center;padding: 30px 10px 30px 10px;"><img style="max-height:50px" alt="Institution Logo Image" src=' + logoImg + ' /><div id="bluePopupHeading" tabindex="0" style="padding: 8px;">' + headerTxt + '</div></div>';
+        popUpStr += '<div style="max-height: 340px;overflow-y: auto; overflow-x: hidden;">';
         popUpStr += content;
         popUpStr += '</div>';
-        popUpStr += '</div>';
-        popUpStr += '<div style="padding: 10px; background-color: #f1e5e5; text-align: center">';
+        popUpStr += '<div style="background-color: #ECECF1;box-sizing: border-box;border: 1px solid #E9E9E9; border-radius: 0 0 8px 8px;text-align:center;font-size:12px;font-weight:bold;">';
         popUpStr += footerBtn;
         popUpStr += '</div>';
         popUpStr += '</div>';
@@ -284,7 +320,7 @@ var BLUE_CANVAS = {
                     if (adminSettings != null) {
                         BLUE_CANVAS.ShowLoginPopUp();
                     }
-                    if (adminSettings != null && adminSettings.BlockingPrompt != null && adminSettings.BlockingPrompt.BlockingOption != "NONE") {
+                    if (BLUE_CANVAS.IsBlockingEnabled()) {
                         $("#right-side-wrapper").on("click", "a[href='/grades']", function (e) {
                             var htmlStringPop = localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP);
                             if (htmlStringPop != undefined && htmlStringPop != null && htmlStringPop != "") {
@@ -403,14 +439,14 @@ var BLUE_CANVAS = {
 
                         if (courseList.PopUpList.length > 0) {
                             var content = '';
-                            content += '<table style="font-size:13px;width:100%" role="presentation">';
+                            content += '<div class="exp-grid-container">';
                             for (var i = 0; i < courseList.PopUpList.length; i++) {
-                                content += '<tr style="height: 40px; border-bottom: 1px solid lightGray;"><td>' + '<a style="cursor:pointer;color:#1c70ed;text-decoration:underline;" href="#" title=' + courseList.PopUpList[i].CourseName + ' onclick="BLUE_CANVAS.PopUpCourseClick(' + courseList.PopUpList[i].CourseID + ');" >' + courseList.PopUpList[i].CourseName + '</a></td><td align="right" > ' + adminSetting.DueLabel + ' ' + courseList.PopUpList[i].DueDate + '</td></tr>';
+                                content += '<a class="exp-grid" href="#" onclick="BLUE_CANVAS.PopUpCourseClick(' + courseList.PopUpList[i].CourseID + ');" title="' + courseList.PopUpList[i].CourseName + '"><div class="col1">' + courseList.PopUpList[i].CourseName + '<div class="col1-data">' + adminSetting.DueLabel + ' ' + courseList.PopUpList[i].DueDate + '</div></div><div class="col2"><img style="height:14px;width:7px;" src="' + BLUE_CANVAS_SETUP.connectorUrl +'/Content/Arrow.svg"></div></a>';
                             }
-                            content += '</table>';
+                            content += '</div>';
 
                             var footerBtn = '';
-                            footerBtn += '<div style="float:left;padding-top:10px;padding-left: 10px;">';
+                            footerBtn += '<div style="float:left;padding-top:7px;padding-left: 10px;">';
 
                             if (adminSetting.LoginPrompt.CheckboxText != "" && adminSetting.LoginPrompt.CheckboxText != null) {
                                 footerBtn += '<input  class="css-checkbox" type="checkbox" id="chkDoNotShow" />';
@@ -419,7 +455,7 @@ var BLUE_CANVAS = {
 
                             footerBtn += '</div>';
                             footerBtn += '<div style="text-align:right;padding:10px;">';
-                            footerBtn += '<input type="button" value="' + adminSetting.LoginPrompt.ButtonText + '" title="' + adminSetting.LoginPrompt.ButtonText + '" class="btn btn-primary" style="white-space: normal;  margin-top: 10px; font-size: 12px; padding: 4px 6px;"  onclick="BLUE_CANVAS.BtnPendingPopUpClick(\'dvOuter\');"  id="btnPendingOk"  />';
+                            footerBtn += '<a id="btnClosePrompt" href="#" tabindex="0" style="color: #33322f;text-decoration: underline;cursor: pointer;" onclick="BLUE_CANVAS.BtnPendingPopUpClick(\'dvOuter\');" title="' + adminSetting.LoginPrompt.ButtonText + '">' + adminSetting.LoginPrompt.ButtonText + '</a>';
                             footerBtn += '</div>';
 
                             var htmlString = BLUE_CANVAS.CommonPopUp("dvInner_SeriousTask", adminSetting.LogoUrl, (hasQPSVM ? adminSetting.LoginPrompt.QPSVMHeaderText : adminSetting.LoginPrompt.FOHeaderText), footerBtn, content);
@@ -431,13 +467,14 @@ var BLUE_CANVAS = {
                                 }
                             }
 
-                            footerBtn = '';
+                            footerBtn = '<div style="text-align:right;padding:10px;">';
                             if (adminSetting.BlockingPrompt.BlockingOption == "GB") {
-                                footerBtn += '<input type="button" tabindex="0" class="btn btn-primary" style="white-space: normal; margin-top: 10px; font-size: 12px; padding: 4px 6px;" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');" value="' + adminSetting.BlockingPrompt.ButtonText + '" title="' + adminSetting.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
+                                footerBtn += '<a id="btnClosePrompt" href="#" tabindex="0" style="color: #33322f;text-decoration: underline;cursor: pointer;" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');" title="' + adminSetting.BlockingPrompt.ButtonText + '">' + adminSetting.BlockingPrompt.ButtonText + '</a>';
                             }
                             else {
-                                footerBtn += '<input type="button" tabindex="0" class="btn btn-primary" style="white-space: normal; margin-top: 10px; font-size: 12px; padding: 4px 6px;" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\');" value="' + adminSetting.BlockingPrompt.ButtonText + '" title="' + adminSetting.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
+                                footerBtn += '<a id="btnClosePrompt" href="#" tabindex="0" style="color: #33322f;text-decoration: underline;cursor: pointer;" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\');" title="' + adminSetting.BlockingPrompt.ButtonText + '">' + adminSetting.BlockingPrompt.ButtonText + '</a>';
                             }
+                            footerBtn += '</div>';
 
                             var htmlStringGradePopUp = BLUE_CANVAS.CommonPopUp("dvInner_SeriousTask", adminSetting.LogoUrl, adminSetting.BlockingPrompt.HeaderText, footerBtn, content);
                             localStorage.setItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP, htmlStringGradePopUp);
@@ -469,11 +506,41 @@ var BLUE_CANVAS = {
         });
     },
 
+    IsBlockingEnabled: function () {
+        var adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
+        if (adminSettings != null && adminSettings.ProjectSettings != null && adminSettings.ProjectSettings.length > 0) {
+            var res = $.grep(adminSettings.ProjectSettings, function (element, index) {
+                return (element.BlockingOption != 0 && element.BlockingOption != 1);
+            });
+            return res.length > 0;
+        }
+        return false;
+    },
+
+    SetGradeBlockFlag: function (taskList) {
+        var isGradeBlock = false, isCourseBlock = false;
+        if (taskList != null && taskList.length > 0) {
+            for (var i = 0; i < taskList.length; i++) {
+                switch (taskList[i].BlockingOption) {
+                    case 2:
+                        isGradeBlock = true;
+                        break
+                    case 3:
+                    case 4:
+                        isCourseBlock = true;
+                    default:
+                }
+            }
+        }
+        BLUE_CANVAS.isOnlyGradeBlock = (isGradeBlock && !isCourseBlock);
+        localStorage.setItem(BLUE_CANVAS.localConstant.BLOCKING_OPTION, BLUE_CANVAS.isOnlyGradeBlock);
+    },
+
     BlockCourse: function (courseID) {
         var urlSplitResult = window.location.toString().toLowerCase().split('/');
         var adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
 
-        if (adminSettings != null && adminSettings.BlockingPrompt != null && adminSettings.BlockingPrompt.BlockingOption != "NONE") {
+        if (BLUE_CANVAS.IsBlockingEnabled()) {
             if (localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_POPUP) == undefined || localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_POPUP) == null || localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_POPUP) == "") {
                 if (localStorage.getItem(BLUE_CANVAS.localConstant.USER_IN_COURSE) == undefined || localStorage.getItem(BLUE_CANVAS.localConstant.USER_IN_COURSE) == null || localStorage.getItem(BLUE_CANVAS.localConstant.USER_IN_COURSE) == "") {
                     BLUE_CANVAS.ShowLoader();
@@ -483,7 +550,7 @@ var BLUE_CANVAS = {
                         url = BLUE_CANVAS_SETUP.canvasAPI + "/api/v1/users/self/custom_data?ns=" + BLUE_CANVAS_SETUP.domainName;
                     }
                     else {
-                        url = BLUE_CANVAS_SETUP.connectorUrl + "/api/Canvas/GetTaskDetails" + "?studentId=" + ENV.current_user_id + "&courseIds=" + BLUE_CANVAS.GetCourseIDs() + "&language=" + BLUE_CANVAS.localConstant.LANGUAGE + "&isLoginPopup=false";
+                        url = BLUE_CANVAS_SETUP.connectorUrl + "/api/Canvas/GetTaskDetails" + "?studentId=" + ENV.current_user_id + "&courseIds=" + courseID + "&language=" + BLUE_CANVAS.localConstant.LANGUAGE + "&isLoginPopup=false";
                     }
                     $.ajax({
                         url: url,
@@ -513,51 +580,46 @@ var BLUE_CANVAS = {
                                     BLUE_CANVAS.GradeBlockDDLAction(uniqueCourseIds);
                                 }
 
-                                var tasks = $.grep(resultTaskList, function (element, index) {
-                                    return (element.CourseID == courseID);
-                                });
-
+                                //var tasks = $.grep(resultTaskList, function (element, index) {
+                                //    return (element.CourseID == courseID);
+                                //});
+                                var tasks = resultTaskList;
                                 if (tasks != null && tasks.length > 0) {
                                     var seriousTaskList;
                                     if (!adminSettings.DisabledCustomData) {
-                                        seriousTaskList = BLUE_CANVAS.FilterPendingTask(tasks, false, false);
+                                        seriousTaskList = BLUE_CANVAS.FilterPendingTask(tasks, false, false, courseID);
                                     }
                                     else {
                                         seriousTaskList = tasks;
                                     }
+                                    BLUE_CANVAS.SetGradeBlockFlag(seriousTaskList);
                                     if (seriousTaskList != null && seriousTaskList.length > 0) {
                                         var content = '';
-                                        content += '<table style="font-size:13px;width:100%" role="presentation">';
+                                        content += ' <div class="exp-grid-container">';
                                         for (var i = 0; i < seriousTaskList.length; i++) {
-                                            var name;
-                                            if (seriousTaskList[i].Name.length > 38) {
-                                                name = seriousTaskList[i].Name.substring(0, 35) + '...';
-                                            }
-                                            else { name = seriousTaskList[i].Name; }
-                                                
-                                            content += '<tr><td><a style="cursor:pointer;color:#1c70ed;text-decoration:underline;" title="' + seriousTaskList[i].Name + '" ';
                                             if (adminSettings.LaunchNewTab) {
-                                                if (adminSettings.BlockingPrompt.BlockingOption == "GB") {
-                                                    content += 'href="' + seriousTaskList[i].Link + '" target="_blank" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');">';
+                                                if (BLUE_CANVAS.isOnlyGradeBlock) {
+                                                    content += '<a class="exp-grid" href="' + seriousTaskList[i].Link + '" target="_blank" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');"';
                                                 }
                                                 else {
-                                                    content += 'href="' + seriousTaskList[i].Link + '" target="_blank" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\');">';
+                                                    content += '<a class="exp-grid" href="' + seriousTaskList[i].Link + '" target="_blank" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\')"';
                                                 }
                                             }
                                             else {
-                                                content += 'href="javascript:void(0);" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');BLUE_CANVAS.NavigateToTask(\'' + seriousTaskList[i].Link + '\');">';
+                                                content += '<a class="exp-grid" href="javascript:void(0);" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');BLUE_CANVAS.NavigateToTask(\'' + seriousTaskList[i].Link + '\');"';
                                             }
-                                            content += name + '</a></td><td align="right" > ' + adminSettings.DueLabel + ' ' + (new Date(seriousTaskList[i].DueDate)).toLocaleDateString(BLUE_CANVAS.localConstant.LANGUAGE, BLUE_CANVAS.localConstant.DATE_FORMAT) + '</td></tr>';
+                                            content += ' title="' + seriousTaskList[i].Name + '"><div class="col1">' + seriousTaskList[i].Name + '<div class="col1-data">' + adminSettings.DueLabel + ' ' + (new Date(seriousTaskList[i].DueDate)).toLocaleDateString(BLUE_CANVAS.localConstant.LANGUAGE, BLUE_CANVAS.localConstant.DATE_FORMAT) + '</div></div><div class="col2"><img style="height:14px;width:7px;" src="' + BLUE_CANVAS_SETUP.connectorUrl + '/Content/Arrow.svg"></div></a>';
                                         }
-                                        content += '</table>';
+                                        content += '</div>';
 
-                                        var footerBtn = '';
-                                        if (adminSettings.BlockingPrompt.BlockingOption == "GB") {
-                                            footerBtn += '<input type="button" class="btn btn-primary" style="white-space: normal; margin-top: 10px;" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');" value="' + adminSettings.BlockingPrompt.ButtonText + '" title="' + adminSettings.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
+                                        var footerBtn = '<div style="text-align:right;padding:10px;">';
+                                        if (BLUE_CANVAS.isOnlyGradeBlock) {
+                                            footerBtn += '<a id="btnClosePrompt" href="#" tabindex="0" style="color: #33322f;text-decoration: underline;cursor: pointer;" onclick="BLUE_CANVAS.ClosePopup(\'dvOuter\');" title="' + adminSettings.BlockingPrompt.ButtonText + '">' + adminSettings.BlockingPrompt.ButtonText + '</a>';
                                         }
                                         else {
-                                            footerBtn += '<input type="button" class="btn btn-primary" style="white-space: normal; margin-top: 10px;" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\');" value="' + adminSettings.BlockingPrompt.ButtonText + '" title="' + adminSettings.BlockingPrompt.ButtonText + '" id="btnDoLater" />';
+                                            footerBtn += '<a id="btnClosePrompt" href="#" tabindex="0" style="color: #33322f;text-decoration: underline;cursor: pointer;" onclick="BLUE_CANVAS.RedirectToDashBoard(\'dvOuter\');" title="' + adminSettings.BlockingPrompt.ButtonText + '">' + adminSettings.BlockingPrompt.ButtonText + '</a>';
                                         }
+                                        footerBtn += '</div>';
 
                                         var blueSeriousTasksPopup = '';
                                         blueSeriousTasksPopup = BLUE_CANVAS.CommonPopUp("dvInner_CoursePending", adminSettings.LogoUrl, adminSettings.BlockingPrompt.HeaderText, footerBtn, content);
@@ -589,6 +651,7 @@ var BLUE_CANVAS = {
                 }
             }
             else {
+                BLUE_CANVAS.isOnlyGradeBlock = localStorage.getItem(BLUE_CANVAS.localConstant.BLOCKING_OPTION);
                 BLUE_CANVAS.ShowBlocking(localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_POPUP), adminSettings, courseID);
                 BLUE_CANVAS.HideLoader();
             }
@@ -596,7 +659,7 @@ var BLUE_CANVAS = {
     },
 
     ShowBlocking: function (popupStr, adminSettings, courseID) {
-        if (adminSettings.BlockingPrompt.BlockingOption == "GB") {
+        if (BLUE_CANVAS.isOnlyGradeBlock) {
             /*view grade popup*/
             var urlSplitResult = window.location.toString().toLowerCase().split('/');
             if ((urlSplitResult.length == 6 || urlSplitResult.length == 7) && urlSplitResult[5] == 'grades') {
@@ -758,6 +821,7 @@ var BLUE_CANVAS = {
         localStorage.removeItem(BLUE_CANVAS.localConstant.CURRENT_COURSE_ID);
         localStorage.removeItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP);
         localStorage.removeItem(BLUE_CANVAS.localConstant.SERIOUS_TASKS_UNIQUE_COURSEIDS);
+        localStorage.removeItem(BLUE_CANVAS.localConstant.BLOCKING_OPTION);
     },
 
     AddLogoutEvent: function () {
@@ -807,20 +871,17 @@ $(function () {
     if (ENV.current_user_roles != null && ENV.current_user_roles.length > 0) {
         /*Landing page popup*/
         if (urlSplitResult.length == 4 && (urlSplitResult[3] == '' || urlSplitResult[3] == '#' || urlSplitResult[3].indexOf('login_success') > 0)) {
-            var adminSettings;
             if (localStorage.getItem(BLUE_CANVAS.localConstant.IS_USER_LOGEDIN) == null || localStorage.getItem(BLUE_CANVAS.localConstant.IS_USER_LOGEDIN) == undefined) {
                 BLUE_CANVAS.GetBlueAdminSetting(BLUE_CANVAS_SETUP.domainName);
                 localStorage.setItem(BLUE_CANVAS.localConstant.IS_USER_LOGEDIN, true);
             }
             else {
-                adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
-                if (adminSettings != null && adminSettings.BlockingPrompt != null && adminSettings.BlockingPrompt.BlockingOption != "NONE") {
+                if (BLUE_CANVAS.IsBlockingEnabled()) {
                     localStorage.removeItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP);
                     BLUE_CANVAS.ShowLoginPopUp(true);/*This is to enable/disable grade block on home page*/
                 }
             }
-            adminSettings = BLUE_CANVAS.GetAdminsettingFromLocal();
-            if (adminSettings != null && adminSettings.BlockingPrompt != null && adminSettings.BlockingPrompt.BlockingOption != "NONE") {
+            if (BLUE_CANVAS.IsBlockingEnabled()) {
                 $("#right-side-wrapper").on("click", "a[href='/grades']", function (e) {
                     var htmlStringGradePopUp = localStorage.getItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_LOGINPOPUP);
                     if (htmlStringGradePopUp != undefined && htmlStringGradePopUp != null && htmlStringGradePopUp != "") {
@@ -843,6 +904,7 @@ $(function () {
                 localStorage.removeItem(BLUE_CANVAS.localConstant.USER_IN_COURSE);
                 localStorage.removeItem(BLUE_CANVAS.localConstant.SERIOUS_TASKS_UNIQUE_COURSEIDS);
                 localStorage.setItem(BLUE_CANVAS.localConstant.CURRENT_COURSE_ID, urlSplitResult[4]);
+                localStorage.removeItem(BLUE_CANVAS.localConstant.BLOCKING_OPTION);
             }
 
             if (localStorage.getItem(BLUE_CANVAS.localConstant.ASSIGNMENT_LINK) == undefined || localStorage.getItem(BLUE_CANVAS.localConstant.ASSIGNMENT_LINK) == null || localStorage.getItem(BLUE_CANVAS.localConstant.ASSIGNMENT_LINK) == "") {
@@ -853,6 +915,7 @@ $(function () {
             localStorage.removeItem(BLUE_CANVAS.localConstant.BLUE_SERIOUS_TASKS_POPUP);
             localStorage.removeItem(BLUE_CANVAS.localConstant.USER_IN_COURSE);
             localStorage.removeItem(BLUE_CANVAS.localConstant.CURRENT_COURSE_ID);
+            localStorage.removeItem(BLUE_CANVAS.localConstant.BLOCKING_OPTION);
         }
 
         $('[name*="blueFeedbackAssignmentLink"]').click(function () {
